@@ -1,3 +1,5 @@
+import java.io.IOException;
+
 /**
  * Created by Pieter Jan on 21-12-2016.
  */
@@ -8,6 +10,12 @@ public class Main {
 
 
         DocumentProcessing dc = new DocumentProcessing();
-        dc.printArray(dc.getArray());
+        //dc.testRegex();
+        //dc.printArray(dc.getArray());
+        try {
+            dc.scanDocument();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
