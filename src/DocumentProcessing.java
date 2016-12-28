@@ -1,59 +1,61 @@
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.HashMap;
 
 /**
  * Created by Pieter Jan on 25-12-2016.
  */
 public class DocumentProcessing {
 
-    private String filename = "resources/corpus/train/M/M-test3.txt";
-    private ArrayList<String> words;
+    //private String filename = "resources/corpus/train/M/M-test3.txt";
+    private HashMap<String, Integer> wordcount;
 
     public DocumentProcessing() {
-        words = new ArrayList<String>();
+        wordcount = new HashMap<String, Integer>();
     }
 
-    public ArrayList<String> getArray() {
-        return words;
-    }
-
-    public void testRegex() {
-        String teststring = "Hello, my name is PewDiePie.    That's pretty good!";
-        String[] tokenizedWords = teststring.replaceAll("[^a-zA-Z ]", "").toLowerCase().split("\\s+");
-
-        for(String word : tokenizedWords) {
-            words.add(word);
-        }
-
-    }
-
-
-    public void scanDocument() throws IOException {
+    public void scanDocument(String filename) {
         String line;
-        String[] tokenizedWords;
-        BufferedReader in = new BufferedReader(new FileReader(filename));
-        while((line = in.readLine()) != null) {
-            tokenizedWords = line.replaceAll("[^a-zA-Z ]", "").toLowerCase().split("\\s+");
-            printArray2(tokenizedWords);
+        BufferedReader in = null;
+        try {
+            in = new BufferedReader(new FileReader(filename));
+            while((line = in.readLine()) != null) {
+                String[] tokenizedWords = line.replaceAll("[^a-zA-Z ]", "").toLowerCase().split("\\s+");
+                addWords(tokenizedWords);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
     }
 
+    public void scanDocuments(String path) {
+        File folder = new File(path);
+        File[] filesList = folder.listFiles();
 
-    public void printArray(ArrayList<String> array) {
-        for(int i = 0; i < array.size(); i++) {
-            System.out.println(array.get(i));
+        for(File file : filesList) {
+            if(file.isFile() && file.getName().endsWith(".txt")) {
+                scanDocument(file.getName());
+            }
         }
     }
 
-    public void printArray2(String[] words) {
-        for(String word : words) {
-            System.out.print(word + " ");
+    private void addWords(String[] tokenizedWords) {
+        for(String word : tokenizedWords) {
+            if(wordcount.containsKey(word)){
+                //word existed
+                wordcount.put(word, wordcount.get(word) + 1);
+            } else {
+                //word is new
+                wordcount.put(word, 1);
+            }
         }
-        System.out.print("\n");
     }
 
-
+    public void displayWords() {
+        for(String word: wordcount.keySet()) {
+            System.out.println(word + " " + wordcount.get(word));
+        }
+    }
 
 }

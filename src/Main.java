@@ -5,17 +5,18 @@ import java.io.IOException;
  */
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello PJSalt!");
-        System.out.println("It's wednesday my dudes!");
 
+        String path = "resources/corpus/train/M/";
 
         DocumentProcessing dc = new DocumentProcessing();
         //dc.testRegex();
         //dc.printArray(dc.getArray());
-        try {
-            dc.scanDocument();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        long begin = System.currentTimeMillis();
+        //dc.scanDocuments(path);
+        dc.scanDocument("resources/corpus/train/M/M-test3.txt");
+        System.out.println("Scanning the file and updating wordcount took: " + (System.currentTimeMillis() - begin) + " milliseconds.");
+        dc.displayWords();
+
+
     }
 }
