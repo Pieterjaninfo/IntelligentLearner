@@ -35,7 +35,8 @@ public class DocumentProcessing {
 
         for(File file : filesList) {
             if(file.isFile() && file.getName().endsWith(".txt")) {
-                scanDocument(file.getName());
+                System.out.println(file.getName());
+                scanDocument(file.getPath());
             }
         }
     }

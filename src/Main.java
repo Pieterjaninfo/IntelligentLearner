@@ -12,8 +12,8 @@ public class Main {
         //dc.testRegex();
         //dc.printArray(dc.getArray());
         long begin = System.currentTimeMillis();
-        //dc.scanDocuments(path);
-        dc.scanDocument("resources/corpus/train/M/M-test3.txt");
+        dc.scanDocuments(path);
+        //dc.scanDocument("resources/corpus/train/M/M-test3.txt");
         System.out.println("Scanning the file and updating wordcount took: " + (System.currentTimeMillis() - begin) + " milliseconds.");
         dc.displayWords();
 
