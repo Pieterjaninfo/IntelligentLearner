@@ -28,6 +28,23 @@ public class Classes {
         return classes;
     }
 
+    public Class getClass(String classname) {
+        for (Class singleClass : getClasses()) {
+            if(singleClass.getClassName().equals(classname)) {
+                return singleClass;
+            }
+        }
+        return null;
+    }
+
+    public void printClassesInfo() {
+        for (Class singleClass : getClasses()) {
+            System.out.println("Class " + singleClass.getClassName() + ":");
+            singleClass.displayWords();
+            System.out.println("----------------------------------------");
+        }
+    }
+
     /**
      *  Represents a single class (Male, Female, Ham, Spam, etc).
      */
@@ -50,6 +67,10 @@ public class Classes {
         }
 
         public void displayWords() {
+            if (words.isEmpty()) {
+                System.out.println("Class " + className + " is empty.");
+                return;
+            }
             for(String word: words.keySet()) {
                 System.out.println(word + " " + words.get(word));
             }

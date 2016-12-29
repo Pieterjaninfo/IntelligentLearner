@@ -17,8 +17,7 @@ public class Main {
 //
 //
 //        System.out.println("Scanning the file and updating wordcount took: " + (System.currentTimeMillis() - begin) + " milliseconds.");
-//        dc.displayWords();
-
+//        dc.displayWords(
 
         Classes classes = new Classes();
         classes.createClass("M");
@@ -28,12 +27,8 @@ public class Main {
             if(singleClass.getClassName().equals("M")) {
                 singleClass.getWords().put("sup", 3);
                 singleClass.getWords().put("bruh", 69);
-
-                singleClass.displayWords();
             }
         }
-
-
-
+        classes.printClassesInfo();
     }
 }
