@@ -48,6 +48,12 @@ public class Classes {
         public HashMap<String, Integer> getWords() {
             return words;
         }
+
+        public void displayWords() {
+            for(String word: words.keySet()) {
+                System.out.println(word + " " + words.get(word));
+            }
+        }
     }
 
 }
