@@ -14,21 +14,30 @@ public class DocumentProcessing {
         wordcount = new HashMap<String, Integer>();
     }
 
-    public void scanDocument(String filename) {
+
+    /**
+     * Reads the given document.
+     * @param filepath The name of the file you want to read
+     */
+    public void scanDocument(String filepath) {
         String line;
         BufferedReader in = null;
+        String[] tokenizedWords;
         try {
-            in = new BufferedReader(new FileReader(filename));
+            in = new BufferedReader(new FileReader(filepath));
             while((line = in.readLine()) != null) {
-                String[] tokenizedWords = line.replaceAll("[^a-zA-Z ]", "").toLowerCase().split("\\s+");
+                tokenizedWords = line.replaceAll("[^a-zA-Z ]", "").toLowerCase().split("\\s+");
                 addWords(tokenizedWords);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
+    /**
+     * Iterates through the given map and scans all the files inside.
+     * @param path The path of the directory containing all the files
+     */
     public void scanDocuments(String path) {
         File folder = new File(path);
         File[] filesList = folder.listFiles();
@@ -41,6 +50,10 @@ public class DocumentProcessing {
         }
     }
 
+    /**
+     * Increments the amount of times the word has been added.
+     * @param tokenizedWords
+     */
     private void addWords(String[] tokenizedWords) {
         for(String word : tokenizedWords) {
             if(wordcount.containsKey(word)){
@@ -53,6 +66,9 @@ public class DocumentProcessing {
         }
     }
 
+    /**
+     * Iterates through the wordcount hashmap and displays each word, with how much they occured.
+     */
     public void displayWords() {
         for(String word: wordcount.keySet()) {
             System.out.println(word + " " + wordcount.get(word));
