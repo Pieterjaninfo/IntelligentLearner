@@ -13,12 +13,12 @@ public class Classtest {
         classes.createClass("M");
         classes.createClass("F");
 
-        for(Classes.Class singleClass : classes.getClasses()) {
+        /*for(Classes.Class singleClass : classes.getClasses()) {
             if(singleClass.getClassName().equals("M")) {
                 singleClass.getWords().put("sup", 3);
                 singleClass.getWords().put("bruh", 69);
             }
         }
-        classes.printClassesInfo();
+        classes.printClassesInfo();*/
     }
 }

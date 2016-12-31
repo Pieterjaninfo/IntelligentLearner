@@ -10,18 +10,18 @@ import java.util.HashMap;
 public class DocumentProcessing {
 
     //private String filename = "resources/corpus/train/M/M-test3.txt";
-    private HashMap<String, Integer> wordcount;
+    private static String TRAINPATH = "resources/corpus/train/";
+    private static String TESTPATH = "resources/corpus/test/";
+
 
     public DocumentProcessing() {
-        wordcount = new HashMap<String, Integer>();
     }
-
 
     /**
      * Reads the given document.
      * @param filepath The name of the file you want to read
      */
-    public void scanDocument(String filepath) {
+    public void scanDocument(String filepath, Classes.Class classOfWords) {
         String line;
         BufferedReader in = null;
         String[] tokenizedWords;
@@ -29,7 +29,7 @@ public class DocumentProcessing {
             in = new BufferedReader(new FileReader(filepath));
             while((line = in.readLine()) != null) {
                 tokenizedWords = line.replaceAll("[^a-zA-Z ]", "").toLowerCase().split("\\s+");
-                addWords(tokenizedWords);
+                classOfWords.addWords(tokenizedWords);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -40,41 +40,40 @@ public class DocumentProcessing {
      * Iterates through the given map and scans all the files inside.
      * @param path The path of the directory containing all the files
      */
-    public void scanDocuments(String path) {
+    public void scanDocumentsInDirectory(String path) {
         File folder = new File(path);
         File[] filesList = folder.listFiles();
 
+        //List through all the emails in the corresponding class directory
         for(File file : filesList) {
+            (new Classes()).createClass(file.getName());
+
             if(file.isFile() && file.getName().endsWith(".txt")) {
-                System.out.println(file.getName());
-                scanDocument(file.getPath());
-            }
-        }
-    }
-
-    /**
-     * Increments the amount of times the word has been added.
-     * @param tokenizedWords
-     */
-    private void addWords(String[] tokenizedWords) {
-        for(String word : tokenizedWords) {
-            if(wordcount.containsKey(word)){
-                //word existed
-                wordcount.put(word, wordcount.get(word) + 1);
+                //System.out.println("Filename is the following: " + file.getName());
+                scanDocument(file.getPath(), Classes.getClass(file.getName()));
             } else {
-                //word is new
-                wordcount.put(word, 1);
+                System.out.println("[DocumentProcessing.java] File found in class directory which is not of type .txt");
             }
         }
     }
 
     /**
-     * Iterates through the wordcount hashmap and displays each word, with how much they occured.
+     * Scan all the documents in the Train folder.
      */
-    public void displayWords() {
-        for(String word: wordcount.keySet()) {
-            System.out.println(word + " " + wordcount.get(word));
+    public void scanTrainDocuments() {
+        File folder = new File(TRAINPATH);
+        File[] filesList = folder.listFiles();
+
+        //List through all the class directories
+        for (File file : filesList) {
+            System.out.println("Filename: " + file.getName());
+            (new Classes()).createClass(file.getName());
+            scanDocumentsInDirectory(TRAINPATH + file.getName());
+            System.out.println("sATH" + TRAINPATH + file.getName());
         }
+
     }
+
+
 
 }

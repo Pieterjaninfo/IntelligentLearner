@@ -12,10 +12,10 @@ public class DocumentReading {
 
         main.DocumentProcessing dc = new main.DocumentProcessing();
         long begin = System.currentTimeMillis();
-        dc.scanDocuments(path);
+        dc.scanDocumentsInDirectory(path);
         //dc.scanDocument("resources/corpus/train/M/M-test3.txt");
 
         System.out.println("Scanning the file and updating wordcount took: " + (System.currentTimeMillis() - begin) + " milliseconds.");
-        dc.displayWords();
+       // dc.displayWords();
     }
 }
