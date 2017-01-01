@@ -9,17 +9,16 @@ import java.util.HashMap;
  */
 public class DocumentProcessing {
 
-    //private String filename = "resources/corpus/train/M/M-test3.txt";
     private static String TRAINPATH = "resources/corpus/train/";
     private static String TESTPATH = "resources/corpus/test/";
 
 
-    public DocumentProcessing() {
-    }
+    public DocumentProcessing() {   }
 
     /**
-     * Reads the given document.
+     * Reads the document using the given filepath and adds the words to the word map of the given Class
      * @param filepath The name of the file you want to read
+     * @param classOfWords The class belonging to the scanned words
      */
     public void scanDocument(String filepath, Classes.Class classOfWords) {
         String line;
@@ -49,6 +48,7 @@ public class DocumentProcessing {
             if(file.isFile() && file.getName().endsWith(".txt")) {
                 scanDocument(file.getPath(), Classes.getClass(file.getParentFile().getName()));
             } else {
+                //THROW UNKNOWN_FILE_IN_CLASS_DIRECTORY ERROR
                 System.out.println("[DocumentProcessing.java] File found in class directory which is not of type .txt");
             }
         }
@@ -63,7 +63,6 @@ public class DocumentProcessing {
 
         //List through all the class directories
         for (File file : filesList) {
-            //System.out.println("Filename: " + file.getName());
             (new Classes()).createClass(file.getName());        //Create the class
             scanDocumentsInDirectory(TRAINPATH + file.getName());
         }

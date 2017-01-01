@@ -15,13 +15,14 @@ public class Classes {
     //MAP CLASSNAME -> CLASS
     private static HashMap<String, Class> classes = new HashMap<String, Class>();
 
+
     public Classes() {
         //Could not get method createClass static, else this whole Classes class would be made static~!
     }
 
     /**
      * Create the words container belonging to a specific class if the unique classname did not exist
-     * @param classname
+     * @param classname The classname belonging to the wanted Class
      */
     public void createClass(String classname) {
         if (!classes.containsKey(classname)) {
@@ -32,6 +33,9 @@ public class Classes {
         }
     }
 
+    /**
+     * Returns the all classes contained in a HashMap.
+     */
     public HashMap<String, Class> getClasses() {
         return classes;
     }
@@ -53,11 +57,9 @@ public class Classes {
     /**
      * Prints the general info of all the classes.
      */
-    public void printClasseInfo() {
+    public static void printClassesInfo(boolean printwords) {
         for (String classname : classes.keySet()) {
-            System.out.println("Class " + classname + ":");
-            //classes.get(classname).displayWords();
-            System.out.println("----------------------------------------");
+            classes.get(classname).printInfo(printwords);
         }
     }
 
@@ -83,14 +85,22 @@ public class Classes {
             return words;
         }
 
-        public void displayWords() {
+        /**
+         * Print the general information of this Class
+         */
+        public void printInfo(boolean printwords) {
+            System.out.println("Class " + className + " contains " + words.size() + " words:");
+
             if (words.isEmpty()) {
                 System.out.println("Class " + className + " is empty.");
                 return;
             }
-            for (String word: words.keySet()) {
-                System.out.println(word + " " + words.get(word));
+            if (printwords) {
+                for (String word : words.keySet()) {
+                    System.out.printf("%15s %d\n", word, words.get(word));
+                }
             }
+            System.out.println("-----------------------------------------------------------------");
         }
 
         /**
@@ -105,12 +115,19 @@ public class Classes {
             }
         }
 
+        /**
+         * Adds words from the given String array to the HashMap
+         * @param words Words in a string array to be added to the words map
+         */
         public void addWords(String[] words) {
             for (String word : words) {
                 addWord(word);
             }
         }
 
+        /**
+         * Remove unreliable words
+         */
         public void filterWords() {
             Utils.removeStopwords(words);
             Utils.removeThresholdViolatingWords(words);
