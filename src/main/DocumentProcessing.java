@@ -46,11 +46,8 @@ public class DocumentProcessing {
 
         //List through all the emails in the corresponding class directory
         for(File file : filesList) {
-            (new Classes()).createClass(file.getName());
-
             if(file.isFile() && file.getName().endsWith(".txt")) {
-                //System.out.println("Filename is the following: " + file.getName());
-                scanDocument(file.getPath(), Classes.getClass(file.getName()));
+                scanDocument(file.getPath(), Classes.getClass(file.getParentFile().getName()));
             } else {
                 System.out.println("[DocumentProcessing.java] File found in class directory which is not of type .txt");
             }
@@ -66,12 +63,10 @@ public class DocumentProcessing {
 
         //List through all the class directories
         for (File file : filesList) {
-            System.out.println("Filename: " + file.getName());
-            (new Classes()).createClass(file.getName());
+            //System.out.println("Filename: " + file.getName());
+            (new Classes()).createClass(file.getName());        //Create the class
             scanDocumentsInDirectory(TRAINPATH + file.getName());
-            System.out.println("sATH" + TRAINPATH + file.getName());
         }
-
     }
 
 

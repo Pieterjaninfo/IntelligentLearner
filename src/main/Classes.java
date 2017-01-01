@@ -45,6 +45,7 @@ public class Classes {
         if (classes.containsKey(classname)) {
             return classes.get(classname);
         } else {
+            System.out.println("[Classes.java] There exists no class with classname: " + classname + "!");
             return null;
         }
     }
@@ -55,7 +56,7 @@ public class Classes {
     public void printClasseInfo() {
         for (String classname : classes.keySet()) {
             System.out.println("Class " + classname + ":");
-            classes.get(classname).displayWords();
+            //classes.get(classname).displayWords();
             System.out.println("----------------------------------------");
         }
     }
@@ -110,9 +111,9 @@ public class Classes {
             }
         }
 
-
-        public void editClassWords() {
-
+        public void filterWords() {
+            Utils.removeStopwords(words);
+            Utils.removeThresholdViolatingWords(words);
         }
     }
 
