@@ -20,7 +20,7 @@ public class DocumentProcessing {
      * @param filepath The name of the file you want to read
      * @param classOfWords The class belonging to the scanned words
      */
-    public void scanDocument(String filepath, Classes.Class classOfWords) {
+    private void scanDocument(String filepath, Classes.Class classOfWords) {
         String line;
         BufferedReader in = null;
         String[] tokenizedWords;
@@ -39,7 +39,7 @@ public class DocumentProcessing {
      * Iterates through the given map and scans all the files inside.
      * @param path The path of the directory containing all the files
      */
-    public void scanDocumentsInDirectory(String path) {
+    private void scanDocumentsInDirectory(String path) {
         File folder = new File(path);
         File[] filesList = folder.listFiles();
 
@@ -67,7 +67,6 @@ public class DocumentProcessing {
             scanDocumentsInDirectory(TRAINPATH + file.getName());
         }
     }
-
 
 
 }
