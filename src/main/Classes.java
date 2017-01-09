@@ -1,6 +1,5 @@
 package main;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -21,7 +20,7 @@ public class Classes {
     }
 
     /**
-     * Create the words container belonging to a specific class if the unique classname did not exist
+     * Create the vocabulary container belonging to a specific class if the unique classname did not exist
      * @param classname The classname belonging to the wanted Class
      */
     public void createClass(String classname) {
@@ -58,6 +57,7 @@ public class Classes {
      * Prints the general info of all the classes.
      */
     public static void printClassesInfo(boolean printwords) {
+        System.out.println("[Classes.java] Info of all classes: ");
         for (String classname : classes.keySet()) {
             classes.get(classname).printInfo(printwords);
         }
@@ -70,10 +70,11 @@ public class Classes {
     public class Class {
 
         private String className;
-        private HashMap<String, Integer> words;     // MAPS WORD -> COUNT
+        private HashMap<String, Integer> vocabulary;     // MAPS WORD -> COUNT
+        private int amountOfWords = 0;              // Amount of vocabulary in the vocabulary
 
         public Class(String classname) {
-            words = new HashMap<String, Integer>();
+            vocabulary = new HashMap<String, Integer>();
             className = classname;
         }
 
@@ -81,23 +82,23 @@ public class Classes {
             return className;
         }
 
-        public HashMap<String, Integer> getWords() {
-            return words;
+        public HashMap<String, Integer> getVocabulary() {
+            return vocabulary;
         }
 
         /**
          * Print the general information of this Class
          */
         public void printInfo(boolean printwords) {
-            System.out.println("Class " + className + " contains " + words.size() + " words:");
+            System.out.println("Class " + className + " contains " + vocabulary.size() + " vocabulary:");
 
-            if (words.isEmpty()) {
+            if (vocabulary.isEmpty()) {
                 System.out.println("Class " + className + " is empty.");
                 return;
             }
             if (printwords) {
-                for (String word : words.keySet()) {
-                    System.out.printf("%15s %d\n", word, words.get(word));
+                for (String word : vocabulary.keySet()) {
+                    System.out.printf("%15s %d\n", word, vocabulary.get(word));
                 }
             }
             System.out.println("-----------------------------------------------------------------");
@@ -105,19 +106,19 @@ public class Classes {
 
         /**
          * Adds the given word to the hashmap or if already existed, increases the amount count.
-         * @param word Word to be added to the words map
+         * @param word Word to be added to the vocabulary map
          */
         public void addWord(String word) {
-            if (words.containsKey(word)){
-                words.put(word, words.get(word) + 1);
+            if (vocabulary.containsKey(word)){
+                vocabulary.put(word, vocabulary.get(word) + 1);
             } else {
-                words.put(word, 1);
+                vocabulary.put(word, 1);
             }
         }
 
         /**
-         * Adds words from the given String array to the HashMap
-         * @param words Words in a string array to be added to the words map
+         * Adds vocabulary from the given String array to the HashMap
+         * @param words Words in a string array to be added to the vocabulary map
          */
         public void addWords(String[] words) {
             for (String word : words) {
@@ -126,11 +127,11 @@ public class Classes {
         }
 
         /**
-         * Remove unreliable words
+         * Remove unreliable vocabulary
          */
         public void filterWords() {
-            Utils.removeStopwords(words);
-            Utils.removeThresholdViolatingWords(words);
+            Utils.removeStopwords(vocabulary);
+            Utils.removeThresholdViolatingWords(vocabulary);
         }
     }
 

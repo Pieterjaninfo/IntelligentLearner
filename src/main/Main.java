@@ -10,9 +10,9 @@ public class Main {
         DocumentProcessing dc = new DocumentProcessing();
         dc.scanTrainDocuments();
 
-        Classes.getClass("F").filterWords();
+        //Classes.getClass("F").filterWords();
         Classes.getClass("M").filterWords();
 
-        Classes.printClassesInfo(false);
+
     }
 }
