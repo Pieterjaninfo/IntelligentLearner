@@ -13,9 +13,9 @@ public class Utils {
     private static final int minThreshold = 2;      // Words that occur less than this amount are considered rare words
     private static final int maxThreshold = 400;    // Words that occur more than this amount are considered often occurring words
 
-    private static int countStopwords = 0;
-    private static int countMinThreshold = 0;
-    private static int countMaxThreshold = 0;
+    private static int countStopwords = 0;          // How many stopwords were deleted
+    private static int countMinThreshold = 0;       // How many words below threshold were deleted
+    private static int countMaxThreshold = 0;       // How many words above threshold were deleted
 
     private static boolean debug = true;
     private static boolean debugHard = false;
