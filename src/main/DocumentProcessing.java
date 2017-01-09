@@ -15,6 +15,26 @@ public class DocumentProcessing {
 
     public DocumentProcessing() {   }
 
+    public HashMap<String, Integer> scanTestDocument(String filepath) {
+        HashMap<String, Integer> voc = new HashMap<String, Integer>();
+        String line;
+        BufferedReader in = null;
+        String[] tokenizedWords;
+        try {
+            in = new BufferedReader(new FileReader(filepath));
+            while((line = in.readLine()) != null) {
+                tokenizedWords = line.replaceAll("[^a-zA-Z ]", "").toLowerCase().split("\\s+");
+                Utils.addWords(voc, tokenizedWords);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return voc;
+    }
+
+
+
     /**
      * Reads the document using the given filepath and adds the words to the word map of the given Class
      * @param filepath The name of the file you want to read
