@@ -22,18 +22,22 @@ public class Tokenizer {
 
     private Tokenizer() {   }
 
+    /**
+     * Normalizes the given string and returns the separte normalized words in a string array.
+     * @param line Un-normalized string
+     * @return Normalized words in a string array
+     */
     public static String[] normalizeText(String line) {
         return line.replaceAll("[^a-zA-Z ]", "").toLowerCase().split("\\s+");
     }
 
     /**
-     *
-     * @param line
-     * @param words
+     * Normalize the given string and add it to the given HashMap
+     * @param line Un-normalized string
+     * @param words HashMap of WORDS -> COUNT
      */
     public static void normalizeTextAddToHashMap(String line, HashMap<String, Integer> words) {
         String[] normalizedWords = normalizeText(line);
-
         for (String word : normalizedWords) {
             if (words.containsKey(word)){
                 words.put(word, words.get(word) + 1);
@@ -41,7 +45,6 @@ public class Tokenizer {
                 words.put(word, 1);
             }
         }
-
     }
 
     /**
@@ -50,7 +53,6 @@ public class Tokenizer {
      */
     public static void removeStopwords(HashMap<String, Integer> words) {
         int countStopwords = 0;
-
         Iterator<Map.Entry<String, Integer>> iter = words.entrySet().iterator();
         while (iter.hasNext()) {
             Map.Entry<String, Integer> entry = iter.next();
@@ -71,19 +73,16 @@ public class Tokenizer {
     public static void removeThresholdViolatingWords(HashMap<String, Integer> words) {
         int countMinThreshold = 0;
         int countMaxThreshold = 0;
-
         Iterator<Map.Entry<String, Integer>> iter = words.entrySet().iterator();
         while (iter.hasNext()) {
             Map.Entry<String, Integer> entry = iter.next();
             if (entry.getValue() < minThreshold) {
                 if (debugHard) System.out.println("[Tokenizer.java] Removed word: " + entry.getKey() + " with " + entry.getValue() + " occurrences.");
                 iter.remove();
-
                 countMinThreshold++;
             } else if (entry.getValue() > maxThreshold) {
                 if(debugHard) System.out.println("[Tokenizer.java] Removed word: " + entry.getKey() + " with " + entry.getValue() + " occurrences.");
                 iter.remove();
-
                 countMaxThreshold++;
             }
         }
