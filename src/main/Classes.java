@@ -116,6 +116,19 @@ public class Classes {
 
         public void setAmountOfDocs(int amount) { this.amountOfDocs = amount; }
 
+        /**
+         * Returns how often the given word occurs in the class.
+         * @param word The word
+         * @return amount of occurences - and 0 if it does not exist in the class vocabulary
+         */
+        public int getWordOccurrences(String word) {
+            int amount = 0;
+            if (vocabulary.containsKey(word)) {
+                amount = vocabulary.get(word);
+            }
+            return amount;
+        }
+
 
 
         /**
