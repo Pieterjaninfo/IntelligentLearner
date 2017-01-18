@@ -1,6 +1,9 @@
 package main;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Set;
 
 /**
  * Encapsulates all the classes containing them in an ArrayList.
@@ -31,8 +34,32 @@ public class Classes {
     /**
      * Returns the all classes contained in a HashMap.
      */
-    public HashMap<String, Class> getClasses() {
-        return classes;
+    public static Collection<Class> getClasses() {
+        return classes.values();
+    }
+
+    /**
+     * Returns the amount of documents of al the classes combined.
+     * @return
+     */
+    public static int getTotalDocs() {
+        int result = 0;
+        for (Classes.Class dataClass : getClasses()) {
+            result += dataClass.amountOfDocs;
+        }
+        return result;
+    }
+
+    /**
+     * Returns the total amount of unique words in all class vocabularies combined.
+     */
+    public static int getTotalVocabularySize() {
+        int amount = 0;
+        ArrayList<String> uniqueWords = new ArrayList<String>();
+        for (Classes.Class dataClass : getClasses()) {
+            uniqueWords.addAll(dataClass.getVocabulary().keySet());
+        }
+        return uniqueWords.size();
     }
 
     /**
@@ -66,8 +93,9 @@ public class Classes {
     public class Class {
 
         private String className;
-        private HashMap<String, Integer> vocabulary;     // MAPS WORD -> COUNT
-        private int amountOfWords = 0;              // Amount of vocabulary in the vocabulary
+        private HashMap<String, Integer> vocabulary;    // MAPS WORD -> COUNT
+        private int amountOfWords = 0;                  // Amount of vocabulary in the vocabulary
+        private int amountOfDocs = 0;
 
         public Class(String classname) {
             vocabulary = new HashMap<String, Integer>();
@@ -81,6 +109,14 @@ public class Classes {
         public HashMap<String, Integer> getVocabulary() {
             return vocabulary;
         }
+
+        public int getAmountOfDocs() { return amountOfDocs; }
+
+        public int getAmountOfWords() { return amountOfWords; }
+
+        public void setAmountOfDocs(int amount) { this.amountOfDocs = amount; }
+
+
 
         /**
          * Print the general information of this Class

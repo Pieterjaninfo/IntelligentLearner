@@ -52,6 +52,7 @@ public class DocumentProcessing {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        classOfWords.setAmountOfDocs(classOfWords.getAmountOfDocs() + 1);
     }
 
     /**
