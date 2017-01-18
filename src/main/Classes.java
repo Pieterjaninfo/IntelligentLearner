@@ -3,10 +3,6 @@ package main;
 import java.util.HashMap;
 
 /**
- * Created by Pieter Jan on 28-12-2016.
- */
-
-/**
  * Encapsulates all the classes containing them in an ArrayList.
  */
 public class Classes {
@@ -114,6 +110,7 @@ public class Classes {
             } else {
                 vocabulary.put(word, 1);
             }
+            amountOfWords++;
         }
 
         /**
@@ -130,8 +127,8 @@ public class Classes {
          * Remove unreliable vocabulary
          */
         public void filterWords() {
-            Utils.removeStopwords(vocabulary);
-            Utils.removeThresholdViolatingWords(vocabulary);
+            Tokenizer.removeStopwords(vocabulary);
+            Tokenizer.removeThresholdViolatingWords(vocabulary);
         }
     }
 

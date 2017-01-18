@@ -14,5 +14,7 @@ public class Main {
         Classes.getClass("M").filterWords();
 
 
+        Classes.printClassesInfo(false);
+
     }
 }

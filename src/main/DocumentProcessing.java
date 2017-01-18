@@ -1,11 +1,10 @@
 package main;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * Created by Pieter Jan on 25-12-2016.
+ * The DocumentProcessing class where documents are being read and processed.
  */
 public class DocumentProcessing {
 
@@ -15,25 +14,25 @@ public class DocumentProcessing {
 
     public DocumentProcessing() {   }
 
+    /**
+     * Reads the test document and returns the words contained in a HashMap.
+     * @param filepath - filepath location of the test document
+     * @return HashMap filled with words mapping to the amount of occurrences
+     */
     public HashMap<String, Integer> scanTestDocument(String filepath) {
-        HashMap<String, Integer> voc = new HashMap<String, Integer>();
+        HashMap<String, Integer> words = new HashMap<String, Integer>();    //WORDS -> AMOUNT
         String line;
         BufferedReader in = null;
-        String[] tokenizedWords;
         try {
             in = new BufferedReader(new FileReader(filepath));
             while((line = in.readLine()) != null) {
-                tokenizedWords = line.replaceAll("[^a-zA-Z ]", "").toLowerCase().split("\\s+");
-                Utils.addWords(voc, tokenizedWords);
+                Tokenizer.normalizeTextAddToHashMap(line, words);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        return voc;
+        return words;
     }
-
-
 
     /**
      * Reads the document using the given filepath and adds the words to the word map of the given Class
@@ -42,12 +41,12 @@ public class DocumentProcessing {
      */
     private void scanDocument(String filepath, Classes.Class classOfWords) {
         String line;
-        BufferedReader in = null;
+        BufferedReader in;
         String[] tokenizedWords;
         try {
             in = new BufferedReader(new FileReader(filepath));
             while((line = in.readLine()) != null) {
-                tokenizedWords = line.replaceAll("[^a-zA-Z ]", "").toLowerCase().split("\\s+");
+                tokenizedWords = Tokenizer.normalizeText(line);
                 classOfWords.addWords(tokenizedWords);
             }
         } catch (IOException e) {
