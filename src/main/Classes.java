@@ -110,6 +110,7 @@ public class Classes {
             } else {
                 vocabulary.put(word, 1);
             }
+            amountOfWords++;
         }
 
         /**
