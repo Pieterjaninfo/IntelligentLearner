@@ -1,9 +1,6 @@
 package main;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Encapsulates all the classes containing them in an ArrayList.
@@ -178,6 +175,23 @@ public class Classes {
         public void filterWords() {
             Tokenizer.removeStopwords(vocabulary);
             Tokenizer.removeThresholdViolatingWords(vocabulary);
+        }
+
+
+        //For future use if binomial classification is required
+        public HashMap<String, Integer> getMap2(HashMap<String, Integer> newMap) {
+            HashMap<String, Integer> map = new HashMap<>();
+
+            //for each fileMap
+            for(Map.Entry<String, Integer> entry : newMap.entrySet()) {
+                String key = entry.getKey();
+                if (map.containsKey(key)) {
+                    map.put(key, map.get(key) + entry.getValue());
+                } else {
+                    map.put(key, entry.getValue());
+                }
+            }
+            return map;
         }
     }
 
