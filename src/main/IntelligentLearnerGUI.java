@@ -3,49 +3,72 @@ package main;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 
 /**
  * Created by Janko on 1/19/2017.
  */
 public class IntelligentLearnerGUI extends Component {
+    private boolean debug = true;
     private JTabbedPane tabbedPane1;
-    private JPanel panel1;
-    private JPanel tab1;
-    private JPanel tab2;
+    private JPanel mainPanel;
+    private JPanel initTab;
+    private JPanel useTab;
     private JTextField kValueField;
-    private JTextField textField2;
+    private JTextField chiValueField;
     private JButton openButton;
+    private JLabel fileLabel;
+    private JButton trainButton;
+    private JLabel trainLabel;
     private JFileChooser fc;
 
     public static void main(String[] args) {
-        JFrame frame = new JFrame("IntelligentLearnerGUI");
-        frame.setContentPane(new IntelligentLearnerGUI().panel1);
+        //Let style automatically adapt to the operating system.
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
+
+        JFrame frame = new JFrame("Intelligent Learner");
+        frame.setContentPane(new IntelligentLearnerGUI().mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
     }
 
     public IntelligentLearnerGUI() {
+
         //Create new file chooser
         fc = new JFileChooser();
         fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
-        openButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                //Handle open button action.
-                int returnVal = fc.showOpenDialog(IntelligentLearnerGUI.this);
+        //Set fileLabel text.
+        fileLabel.setText(fc.getCurrentDirectory().getPath());
 
-                if (returnVal == JFileChooser.APPROVE_OPTION) {
-                    File file = fc.getSelectedFile();
-                    //This is where a real application would open the file.
-                    System.out.println("Opening: " + file.getName() + "." + "\n");
-                } else {
-                    System.out.println("Open command cancelled by user." + "\n");
-                }
+        openButton.addActionListener((ActionEvent e) -> {
+            //Handle open button action.
+            int returnVal = fc.showOpenDialog(IntelligentLearnerGUI.this);
+
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                File file = fc.getSelectedFile();
+                //TODO: Do something with the file.
+                fileLabel.setText(file.getPath());
+                if(debug)System.out.println("Opening: " + file.getName() + ".");
+            } else {
+                if(debug)System.out.println("Open command cancelled by user.");
             }
+        });
+        trainButton.addActionListener((ActionEvent e) -> {
+            //TODO: Call classifier training method.
+            trainLabel.setText("<html>Bayesian Network has been created!<br>" +
+                    "Please go on to next tab to test it.");
         });
     }
 }
