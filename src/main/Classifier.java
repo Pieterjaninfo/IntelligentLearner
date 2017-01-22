@@ -13,24 +13,17 @@ public class Classifier {
 
     private static final double SMOOTHING_FACTOR = 1.0;
 
+    //CANNOT BE CALCULATED USING CURRENT SETUP
+    @Deprecated
     public Classes.Class binomialClassifier(HashMap<String, Integer> documentWords) {
-        String classname;
-        double chance;
-
-        Collection<Classes.Class> classes = Classes.getClasses();
-
-        //iterate though the classes
-        for (Classes.Class dataClass : classes) {
-            double classChance = 1;
-            for (String word : documentWords.keySet()) {
-                if (dataClass.getVocabulary().containsKey(word)) {
-                    //Do something
-                }
-            }
-        }
         return null;
     }
 
+    /**
+     * Classifies the given document using multinomial classification and logspace(base e).
+     * @param documentWords Words of the document
+     * @return The Class which is the most probable
+     */
     public Classes.Class multinomialClassifier(HashMap<String, Integer> documentWords) {
         HashMap<Classes.Class, Double> classesProbabilities = new HashMap<>(); // MAP CLASSNAME -> PROBABILITY
 
@@ -40,18 +33,26 @@ public class Classifier {
         //iterate though the classes
         for (Classes.Class dataClass : classes) {
             HashMap<String, Integer> classVocabulary = dataClass.getVocabulary();
-            double probClass = (double) dataClass.getAmountOfDocs() / (double) Classes.getTotalDocs();
-            double probWordsGivenClass = 1;
-            double numerator;
-            double denominator;
+            double probClass = Math.log((double) dataClass.getAmountOfDocs() / (double) Classes.getTotalDocs());
+            double probWordsGivenClass = 0;
+            double numerator = 0;
+            double denominator = 0;
             double power;
             for (String word : documentWords.keySet()) {
                 numerator =  dataClass.getWordOccurrences(word)+ SMOOTHING_FACTOR;
                 denominator = dataClass.getAmountOfWords() * SMOOTHING_FACTOR * Classes.getTotalVocabularySize();
+                double wordChance = numerator / denominator;
                 power = documentWords.get(word);
-                probWordsGivenClass *= Math.pow(numerator/denominator, power);
+                probWordsGivenClass += Math.log(wordChance) * power;
+                System.out.printf("Word prob = %.10f\n", wordChance);
             }
-            classesProbabilities.put(dataClass, probClass*probWordsGivenClass);
+            classesProbabilities.put(dataClass, probClass+probWordsGivenClass);
+            System.out.printf("ClassProb: %.2f probWordsGivenClass: %.200f numerator: %f denominator: %f\n", probClass, probWordsGivenClass, numerator, denominator);
+        }
+
+        System.out.println("=======================================================================");
+        for (Map.Entry<Classes.Class, Double> entry : classesProbabilities.entrySet()) {
+            System.out.printf("Class: %s with probability: %.5f\n", entry.getKey().getClassName(), entry.getValue());
         }
         return getProbableClass(classesProbabilities);
     }
@@ -70,4 +71,6 @@ public class Classifier {
         }
         return maxEntry.getKey();
     }
+
+
 }
