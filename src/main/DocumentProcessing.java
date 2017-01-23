@@ -90,5 +90,24 @@ public class DocumentProcessing {
         }
     }
 
+    public void scanTestDocuments() {
+        File folder = new File(TESTPATH);
+        File[] filesList = folder.listFiles();
+
+        //ITERATE THROUGH CLASSES
+        for (File file : filesList) {
+            File folder2 = new File(TESTPATH + file.getName());
+            File[] filesList2 = folder2.listFiles();
+            //ITERATE THROUGH CLASS FILES
+            for (File file2 : filesList2) {
+                if (file2.isFile() && file2.getName().endsWith(".txt")) {
+                    HashMap<String, Integer> words = scanDocument(file2.getPath());
+
+                    //TODO KEEP TRACK OF ACCURACY/RECALL/PRECISION
+                }
+            }
+        }
+    }
+
 
 }
