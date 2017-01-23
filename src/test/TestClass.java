@@ -1,7 +1,5 @@
 package test;
 
-import main.Classes;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,7 +20,7 @@ public class TestClass {
 
 
     public static void printClassesInfo(boolean printwords) {
-        System.out.println("[Classes.java] Info of all classes: ");
+        System.out.println("[DataClass.java] Info of all classes: ");
         for (TestClass dataClass : classes) {
             dataClass.printInfo(printwords);
         }

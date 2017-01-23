@@ -11,20 +11,18 @@ public class Main {
         DocumentProcessing dc = new DocumentProcessing();
         Classifier cf = new Classifier();
 
+
         dc.scanTrainDocuments();
-        for (Classes.Class dataClass : Classes.getClasses()) {
-            dataClass.filterWords();
-        }
+
+        DataClass.setupClasses();
+
 
         String filepath = "resources/corpus/test/F/";
-        String filename = "F-train547.txt";
+        String filename = "F-train591.txt";
 
-        HashMap<String, Integer> map = dc.scanTestDocument(filepath + filename);
-
-        Classes.Class probableClass = cf.multinomialClassifier(map);
-
+        HashMap<String, Integer> map = dc.scanDocument(filepath + filename);
+        DataClass probableClass = cf.multinomialClassifier(map);
         System.out.printf("Most probable class for file %s is: %s\n", filename, probableClass.getClassName());
+
     }
-
-
 }

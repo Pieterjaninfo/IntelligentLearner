@@ -1,6 +1,5 @@
 package main;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,11 +10,12 @@ import java.util.Map;
  */
 public class Classifier {
 
+    private static boolean debug = false;
     private static final double SMOOTHING_FACTOR = 1.0;
 
     //CANNOT BE CALCULATED USING CURRENT SETUP
     @Deprecated
-    public Classes.Class binomialClassifier(HashMap<String, Integer> documentWords) {
+    public DataClass binomialClassifier(HashMap<String, Integer> documentWords) {
         return null;
     }
 
@@ -24,35 +24,37 @@ public class Classifier {
      * @param documentWords Words of the document
      * @return The Class which is the most probable
      */
-    public Classes.Class multinomialClassifier(HashMap<String, Integer> documentWords) {
-        HashMap<Classes.Class, Double> classesProbabilities = new HashMap<>(); // MAP CLASSNAME -> PROBABILITY
+    public DataClass multinomialClassifier(HashMap<String, Integer> documentWords) {
+        HashMap<DataClass, Double> classesProbabilities = new HashMap<>(); // MAP CLASSNAME -> PROBABILITY
 
-        Collection<Classes.Class> classes = Classes.getClasses();
-        int wordTypes = Classes.getTotalVocabularySize();
+        Collection<DataClass> classes = DataClass.getClasses().values();
+        int wordTypes = DataClass.getTotalVocabularySize();
 
         //iterate though the classes
-        for (Classes.Class dataClass : classes) {
+        for (DataClass dataClass : classes) {
             HashMap<String, Integer> classVocabulary = dataClass.getVocabulary();
-            double probClass = Math.log((double) dataClass.getAmountOfDocs() / (double) Classes.getTotalDocs());
+            double probClass = Math.log((double) dataClass.getAmountOfDocs() / (double) DataClass.getTotalDocs());
             double probWordsGivenClass = 0;
             double numerator = 0;
             double denominator = 0;
             double power;
             for (String word : documentWords.keySet()) {
                 numerator =  dataClass.getWordOccurrences(word)+ SMOOTHING_FACTOR;
-                denominator = dataClass.getAmountOfWords() * SMOOTHING_FACTOR * Classes.getTotalVocabularySize();
+                denominator = dataClass.getAmountOfWords() * SMOOTHING_FACTOR * DataClass.getTotalVocabularySize();
                 double wordChance = numerator / denominator;
                 power = documentWords.get(word);
                 probWordsGivenClass += Math.log(wordChance) * power;
-                System.out.printf("Word prob = %.10f\n", wordChance);
+//                System.out.printf("Word prob = %.11f\n", wordChance);
             }
             classesProbabilities.put(dataClass, probClass+probWordsGivenClass);
-            System.out.printf("ClassProb: %.2f probWordsGivenClass: %.200f numerator: %f denominator: %f\n", probClass, probWordsGivenClass, numerator, denominator);
+            if (debug) System.out.printf("ClassProb: %.3f probWordsGivenClass: %.15f numerator: %.1f denominator: %.1f\n", probClass, probWordsGivenClass, numerator, denominator);
         }
 
-        System.out.println("=======================================================================");
-        for (Map.Entry<Classes.Class, Double> entry : classesProbabilities.entrySet()) {
-            System.out.printf("Class: %s with probability: %.5f\n", entry.getKey().getClassName(), entry.getValue());
+        if (debug) {
+            System.out.println("=======================================================================");
+            for (Map.Entry<DataClass, Double> entry : classesProbabilities.entrySet()) {
+                System.out.printf("Class: %s with probability: %.5f\n", entry.getKey().getClassName(), entry.getValue());
+            }
         }
         return getProbableClass(classesProbabilities);
     }
@@ -62,9 +64,9 @@ public class Classifier {
      * @param probabilities HashMap linking Class class to Double probability
      * @return Class with the highest probability
      */
-    public Classes.Class getProbableClass(HashMap<Classes.Class, Double> probabilities) {
-        Map.Entry<Classes.Class, Double> maxEntry = null;
-        for (Map.Entry<Classes.Class, Double> entry : probabilities.entrySet()) {
+    public DataClass getProbableClass(HashMap<DataClass, Double> probabilities) {
+        Map.Entry<DataClass, Double> maxEntry = null;
+        for (Map.Entry<DataClass, Double> entry : probabilities.entrySet()) {
             if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0) {
                 maxEntry = entry;
             }
