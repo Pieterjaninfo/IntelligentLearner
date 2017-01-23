@@ -9,11 +9,11 @@ public class Classtest {
 
     public static void main(String[] args) {
         // Test if the classes work as intended.
-        Classes classes = new Classes();
-        classes.createClass("M");
-        classes.createClass("F");
 
-        /*for(Classes.Class singleClass : classes.getClasses()) {
+        new DataClass("M");
+        new DataClass("F");
+
+        /*for(DataClass.Class singleClass : classes.getClasses()) {
             if(singleClass.getClassName().equals("M")) {
                 singleClass.getVocabulary().put("sup", 3);
                 singleClass.getVocabulary().put("bruh", 69);

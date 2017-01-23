@@ -1,23 +1,26 @@
 package test;
 
-import main.Classes;
-
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by Pieter Jan on 20-1-2017.
  */
 public class TestClass {
 
-    private static Collection<TestClass> classes;
+    private static Set<TestClass> classes = new HashSet<>(); // not initialized
+    private static HashMap<String, TestClass> classes2 = new HashMap<>();
 
     public static Collection<TestClass> getClasses() {
         return classes;
     }
+    private static HashMap<String, TestClass> getClasses2() { return classes2; }
+
 
     public static void printClassesInfo(boolean printwords) {
-        System.out.println("[Classes.java] Info of all classes: ");
+        System.out.println("[DataClass.java] Info of all classes: ");
         for (TestClass dataClass : classes) {
             dataClass.printInfo(printwords);
         }
@@ -29,7 +32,9 @@ public class TestClass {
         this.className = className;
         this.vocabulary = vocabulary;
         classes.add(this);
+//        classes2.put(className, this);
     }
+
 
     private String className;
     private HashMap<String, Integer> vocabulary;    // MAPS WORD -> COUNT
