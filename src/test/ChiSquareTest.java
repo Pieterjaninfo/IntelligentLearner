@@ -8,7 +8,7 @@ import main.Tokenizer;
  */
 public class ChiSquareTest {
     public static void main(String[] args) {
-        Tokenizer.chiSquareFeatureSelection(DataClass.getTotalVocabulary());
+        Tokenizer.getViableChiSquareWords(DataClass.getTotalVocabulary());
         int[][] table = {
                 {1,2,3,6},
                 {4,5,6,15},
@@ -19,7 +19,7 @@ public class ChiSquareTest {
         System.out.println(Tokenizer.calculateChiSquareValue(table));
     }
 
-//    for (String word : Tokenizer.chiSquareFeatureSelection(DataClass.getTotalVocabulary()) ) {
+//    for (String word : Tokenizer.getViableChiSquareWords(DataClass.getTotalVocabulary()) ) {
 //        System.out.println(word);
 //    }
 }

@@ -1,10 +1,9 @@
 package main;
 
-import javax.xml.crypto.Data;
 import java.util.*;
 
 /**
- * Encapsulates all the classes containing them in an ArrayList.
+ * The DataClasses to which a document belongs to.
  */
 public class DataClass {
 
@@ -168,7 +167,7 @@ public class DataClass {
         Tokenizer.removeStopwords(vocabulary);
         Tokenizer.removeThresholdViolatingWords(vocabulary);
 
-        HashSet<String> uselessWords = Tokenizer.chiSquareFeatureSelection(DataClass.getTotalVocabulary());
+        HashSet<String> uselessWords = Tokenizer.getViableChiSquareWords(DataClass.getTotalVocabulary());
         vocabulary.keySet().removeAll(uselessWords);
     }
 

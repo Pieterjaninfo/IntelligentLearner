@@ -11,7 +11,11 @@ import java.util.Map;
 public class Classifier {
 
     private static boolean debug = false;
-    private static final double SMOOTHING_FACTOR = 1.0;
+    private static double smoothingFactor = 1.0;
+
+    public void setSmoothingFactor(double smoothingFactor) {
+        this.smoothingFactor = smoothingFactor;
+    }
 
     //TODO IMPLEMENT
     @Deprecated
@@ -38,11 +42,11 @@ public class Classifier {
 
             double probWordsGivenClass = 0;
             double numerator = 0;
-            double denominator = dataClass.getAmountOfWords() * SMOOTHING_FACTOR * DataClass.getTotalVocabularySize();
+            double denominator = dataClass.getAmountOfWords() * smoothingFactor * DataClass.getTotalVocabularySize();
             double power;
 
             for (String word : documentWords.keySet()) {
-                numerator =  dataClass.getWordOccurrences(word)+ SMOOTHING_FACTOR;
+                numerator =  dataClass.getWordOccurrences(word) + smoothingFactor;
                 double wordChance = numerator / denominator;
                 power = documentWords.get(word);
                 probWordsGivenClass += Math.log(wordChance) * power;
@@ -67,14 +71,12 @@ public class Classifier {
      * @return Class with the highest probability
      */
     public DataClass getProbableClass(HashMap<DataClass, Double> probabilities) {
-//        long begin = System.currentTimeMillis();
         Map.Entry<DataClass, Double> maxEntry = null;
         for (Map.Entry<DataClass, Double> entry : probabilities.entrySet()) {
             if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0) {
                 maxEntry = entry;
             }
         }
-//        System.out.println("Time spend doing comparing: " + (System.currentTimeMillis() - begin));
         return maxEntry.getKey();
     }
 

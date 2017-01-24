@@ -1,6 +1,5 @@
 package main;
 
-import javax.xml.crypto.Data;
 import java.io.*;
 import java.util.HashMap;
 
@@ -9,8 +8,8 @@ import java.util.HashMap;
  */
 public class DocumentProcessing {
 
-    private static String TRAINPATH = "resources/corpus/train/";
-    private static String TESTPATH = "resources/corpus/test/";
+//    private static String trainpath = "resources/corpus/train/";
+//    private static String testpath = "resources/corpus/test/";
 
 
     public DocumentProcessing() {   }
@@ -57,26 +56,26 @@ public class DocumentProcessing {
     /**
      * Scan all the documents in the Train folder.
      */
-    public void scanTrainDocuments() {
-        File folder = new File(TRAINPATH);
+    public void scanTrainDocuments(String trainpath) {
+        File folder = new File(trainpath);
         File[] filesList = folder.listFiles();
 
         //List through all the class directories
         for (File file : filesList) {
             new DataClass(file.getName());                                      //Create the class
-            scanTrainDocumentsInDirectory(TRAINPATH + file.getName());
+            scanTrainDocumentsInDirectory(trainpath + file.getName());
         }
     }
 
-    public HashMap<String, HashMap<String, Integer>> scanTestDocuments() {
-        File folder = new File(TESTPATH);
+    public HashMap<String, HashMap<String, Integer>> scanTestDocuments(String testpath) {
+        File folder = new File(testpath);
         File[] filesList = folder.listFiles();
 
         HashMap<String, HashMap<String, Integer>> stats = new HashMap<>(); // MAPS classname -> (class -> good classified)
 
         //ITERATE THROUGH CLASSES
         for (File file : filesList) {
-            File folder2 = new File(TESTPATH + file.getName());
+            File folder2 = new File(testpath + file.getName());
             File[] filesList2 = folder2.listFiles();
 
             String className = file.getName();
