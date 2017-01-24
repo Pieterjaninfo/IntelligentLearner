@@ -7,6 +7,10 @@ import java.util.*;
  */
 public class DataClass {
 
+    // =====================================================================================
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Static Class Components ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // =====================================================================================
+
     //MAP CLASSNAME -> CLASS
     private static HashMap<String, DataClass> classes = new HashMap<>();    //MAPS Classname -> (WORD -> AMOUNT)
 
@@ -79,12 +83,14 @@ public class DataClass {
         }
     }
 
-    // ==============================DataClass Components===================================
+    // =====================================================================================
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ DataClass Components ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // =====================================================================================
 
     private String className;                                       // Name of the class
     private HashMap<String, Integer> vocabulary;                    // MAPS WORD -> COUNT
     private HashMap<String, HashMap<String, Integer>> documents;    // MAPS DOCUMENT NAME -> (WORD -> AMOUNT)
-    private int amountOfWords = 0;                                  // Amount of vocabulary in the vocabulary
+    private int amountOfWords = 0;                                  // Amount of words in the vocabulary
 
     public DataClass(String className) {
         vocabulary = new HashMap<>();
@@ -136,6 +142,30 @@ public class DataClass {
     }
 
     /**
+     * Adds the given document to the DataClass
+     * @param documentName Name of the document (filename)
+     * @param words Map containing the words linked to the amount of the document
+     */
+    public void addDocument(String documentName, HashMap<String, Integer> words) {
+        if (!documents.containsKey(documentName)) {
+            documents.put(documentName, words);
+        } else {
+            System.out.println("Tried to add already existing document to the DataClass!");
+        }
+    }
+
+    /**
+     * Removes unreliable vocabulary
+     */
+    public void filterWords() {
+        Tokenizer.removeStopwords(vocabulary);
+        Tokenizer.removeThresholdViolatingWords(vocabulary);
+
+        HashSet<String> uselessWords = Tokenizer.getViableChiSquareWords(DataClass.getTotalVocabulary());
+        vocabulary.keySet().removeAll(uselessWords);
+    }
+
+    /**
      * Print the general information of this Class
      */
     public void printInfo(boolean printwords) {
@@ -150,25 +180,6 @@ public class DataClass {
             }
         }
         System.out.println("-----------------------------------------------------------------");
-    }
-
-    public void addDocument(String documentName, HashMap<String, Integer> words) {
-        if (!documents.containsKey(documentName)) {
-            documents.put(documentName, words);
-        } else {
-            System.out.println("Tried to add already existing document to the DataClass!");
-        }
-    }
-
-    /**
-     * Remove unreliable vocabulary
-     */
-    public void filterWords() {
-        Tokenizer.removeStopwords(vocabulary);
-        Tokenizer.removeThresholdViolatingWords(vocabulary);
-
-        HashSet<String> uselessWords = Tokenizer.getViableChiSquareWords(DataClass.getTotalVocabulary());
-        vocabulary.keySet().removeAll(uselessWords);
     }
 
 

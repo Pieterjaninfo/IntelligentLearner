@@ -17,8 +17,8 @@ public class Tokenizer {
     private static int countMinThreshold = 0;       // How many words below threshold were deleted
     private static int countMaxThreshold = 0;       // How many words above threshold were deleted
 
-    private static double CHI_SQUARE_VALUE = 0.0;       // CHI SQUARE VALUE FOR FILTERING OUT
-    private static int MAX_CHI_WORDS = 20000000;
+    private static double CHI_SQUARE_VALUE = 1.0;       // CHI SQUARE VALUE FOR FILTERING OUT
+    private static int MAX_CHI_WORDS = 200;
 
     private static boolean debug = true;
     private static boolean debugHard = false;
