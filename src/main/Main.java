@@ -1,7 +1,6 @@
 package main;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Pieter Jan on 21-12-2016.
@@ -15,14 +14,27 @@ public class Main {
         dc.scanTrainDocuments();
 
         DataClass.setupClasses();
+        System.out.println("Finished setting up all the classes.");
 
 
-        String filepath = "resources/corpus/test/F/";
-        String filename = "F-train591.txt";
+        HashMap<String, HashMap<String, Integer>> stats = dc.scanTestDocuments();
 
-        HashMap<String, Integer> map = dc.scanDocument(filepath + filename);
-        DataClass probableClass = cf.multinomialClassifier(map);
-        System.out.printf("Most probable class for file %s is: %s\n", filename, probableClass.getClassName());
+        System.out.println("Finished reading test documents");
+
+        List<String> sortedClasses = new ArrayList(stats.keySet());
+        Collections.sort(sortedClasses);
+
+        int[][] table = Utils.createTable(stats);
+        Utils.printTable(table, sortedClasses);
+        Utils.getStatistics(table, sortedClasses);
+
+
+//        String filepath = "resources/corpus/test/F/";
+//        String filename = "F-train591.txt";
+//
+//        HashMap<String, Integer> map = dc.scanDocument(filepath + filename);
+//        DataClass probableClass = cf.multinomialClassifier(map);
+//        System.out.printf("Most probable class for file %s is: %s\n", filename, probableClass.getClassName());
 
     }
 }

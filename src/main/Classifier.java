@@ -6,14 +6,14 @@ import java.util.Map;
 
 
 /**
- * Created by Pieter Jan on 17-1-2017.
+ * Classifier class with tools to classify a given HashMap of words to an existing DataClass.
  */
 public class Classifier {
 
     private static boolean debug = false;
     private static final double SMOOTHING_FACTOR = 1.0;
 
-    //CANNOT BE CALCULATED USING CURRENT SETUP
+    //TODO IMPLEMENT
     @Deprecated
     public DataClass binomialClassifier(HashMap<String, Integer> documentWords) {
         return null;
@@ -33,19 +33,21 @@ public class Classifier {
         //iterate though the classes
         for (DataClass dataClass : classes) {
             HashMap<String, Integer> classVocabulary = dataClass.getVocabulary();
-            double probClass = Math.log((double) dataClass.getAmountOfDocs() / (double) DataClass.getTotalDocs());
+            double probClass = Math.log( dataClass.getAmountOfDocs() / (double) DataClass.getTotalDocs());
+
+
             double probWordsGivenClass = 0;
             double numerator = 0;
-            double denominator = 0;
+            double denominator = dataClass.getAmountOfWords() * SMOOTHING_FACTOR * DataClass.getTotalVocabularySize();
             double power;
+
             for (String word : documentWords.keySet()) {
                 numerator =  dataClass.getWordOccurrences(word)+ SMOOTHING_FACTOR;
-                denominator = dataClass.getAmountOfWords() * SMOOTHING_FACTOR * DataClass.getTotalVocabularySize();
                 double wordChance = numerator / denominator;
                 power = documentWords.get(word);
                 probWordsGivenClass += Math.log(wordChance) * power;
-//                System.out.printf("Word prob = %.11f\n", wordChance);
             }
+
             classesProbabilities.put(dataClass, probClass+probWordsGivenClass);
             if (debug) System.out.printf("ClassProb: %.3f probWordsGivenClass: %.15f numerator: %.1f denominator: %.1f\n", probClass, probWordsGivenClass, numerator, denominator);
         }
@@ -65,12 +67,14 @@ public class Classifier {
      * @return Class with the highest probability
      */
     public DataClass getProbableClass(HashMap<DataClass, Double> probabilities) {
+//        long begin = System.currentTimeMillis();
         Map.Entry<DataClass, Double> maxEntry = null;
         for (Map.Entry<DataClass, Double> entry : probabilities.entrySet()) {
             if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0) {
                 maxEntry = entry;
             }
         }
+//        System.out.println("Time spend doing comparing: " + (System.currentTimeMillis() - begin));
         return maxEntry.getKey();
     }
 
