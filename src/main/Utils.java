@@ -13,6 +13,7 @@ public class Utils {
     private static String log = "";
 
     public static String getLog() { return log; }
+    public static void resetLog() { log = ""; }
 
     public static int[][] createTable(HashMap<String, HashMap<String, Integer>> stats) {
         int[][] table = new int[stats.size()][stats.size()];
@@ -116,8 +117,7 @@ public class Utils {
         }
 //        System.out.printf("Accuracy: %.1f%% with Baseline: %.1f%%.\n", (accuracy * 100), (testBaseline*100));
         log += String.format("Accuracy: %.1f%% with (Train) Baseline: %.1f%% and (Test) Baseline: %.1f%%.\n", (accuracy * 100), (trainBaseline*100), (testBaseline*100));
-
-
+        log += "\n\n";
     }
 
     private static double getTrainBaseline(List<String> classnames) {
@@ -128,12 +128,8 @@ public class Utils {
             maxDocs = Math.max(maxDocs, dataClass.getAmountOfDocs());
             totalDocs += dataClass.getAmountOfDocs();
         }
-
         return (double) maxDocs / (double) totalDocs;
     }
-
-
-
 
 
 }
