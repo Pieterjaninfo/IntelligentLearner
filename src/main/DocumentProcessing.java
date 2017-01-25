@@ -8,8 +8,8 @@ import java.util.HashMap;
  */
 public class DocumentProcessing {
 
-    private static String TRAINPATH = "resources/corpus/train/";
-    private static String TESTPATH = "resources/corpus/test/";
+//    private static String trainpath = "resources/corpus/train/";
+//    private static String testpath = "resources/corpus/test/";
 
 
     public DocumentProcessing() {   }
@@ -35,27 +35,6 @@ public class DocumentProcessing {
     }
 
     /**
-     * Reads the document using the given filepath and adds the words to the word map of the given Class
-     * @param filepath The name of the file you want to read
-     * @param classOfWords The class belonging to the scanned words
-     */
-//    private void scanTrainDocument(String filepath, DataClass classOfWords) {
-//        HashMap<String, Integer> words = new HashMap<>();
-//        String line;
-//        BufferedReader in;
-//        try {
-//            in = new BufferedReader(new FileReader(filepath));
-//            while((line = in.readLine()) != null) {
-//                Tokenizer.normalizeTextAddToHashMap(line, words);
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        //classOfWords.addDocument(); // add document to the class
-//        //classOfWords.setAmountOfDocs(classOfWords.getAmountOfDocs() + 1);
-//    }
-
-    /**
      * Iterates through the given map and scans all the files inside.
      * @param path The path of the directory containing all the files
      */
@@ -66,8 +45,6 @@ public class DocumentProcessing {
         //List through all the documents in the corresponding class directory
         for(File file : filesList) {
             if(file.isFile() && file.getName().endsWith(".txt")) {
-//                scanTrainDocument(file.getPath(), DataClass.getClass(file.getParentFile().getName()));
-//                System.out.printf("path: %s class: %s filename: %s\n", file.getPath(), file.getParentFile().getName(), file.getName());
                 DataClass.getClass(file.getParentFile().getName()).addDocument(file.getName(), scanDocument(file.getPath()));
             } else {
                 //THROW UNKNOWN_FILE_IN_CLASS_DIRECTORY ERROR
@@ -79,34 +56,44 @@ public class DocumentProcessing {
     /**
      * Scan all the documents in the Train folder.
      */
-    public void scanTrainDocuments() {
-        File folder = new File(TRAINPATH);
+    public void scanTrainDocuments(String trainpath) {
+        File folder = new File(trainpath);
         File[] filesList = folder.listFiles();
 
         //List through all the class directories
         for (File file : filesList) {
             new DataClass(file.getName());                                      //Create the class
-            scanTrainDocumentsInDirectory(TRAINPATH + file.getName());
+            scanTrainDocumentsInDirectory(trainpath + file.getName());
         }
     }
 
-    public void scanTestDocuments() {
-        File folder = new File(TESTPATH);
+    public HashMap<String, HashMap<String, Integer>> scanTestDocuments(String testpath) {
+        File folder = new File(testpath);
         File[] filesList = folder.listFiles();
+
+        HashMap<String, HashMap<String, Integer>> stats = new HashMap<>(); // MAPS classname -> (class -> good classified)
 
         //ITERATE THROUGH CLASSES
         for (File file : filesList) {
-            File folder2 = new File(TESTPATH + file.getName());
+            File folder2 = new File(testpath + file.getName());
             File[] filesList2 = folder2.listFiles();
+
+            String className = file.getName();
+            if (!stats.containsKey(file.getName())) { stats.put(className, new HashMap<>()); }  //Add realClass
+            for (File classnames : filesList) {stats.get(className).put(classnames.getName(), 0); } //Fill with all the predClasses
+
+            HashMap<String, Integer> innerStats = stats.get(className);
+
             //ITERATE THROUGH CLASS FILES
             for (File file2 : filesList2) {
                 if (file2.isFile() && file2.getName().endsWith(".txt")) {
                     HashMap<String, Integer> words = scanDocument(file2.getPath());
-
-                    //TODO KEEP TRACK OF ACCURACY/RECALL/PRECISION
+                    DataClass predictedClass = (new Classifier()).multinomialClassifier(words);
+                    innerStats.put(predictedClass.getClassName(), innerStats.get(predictedClass.getClassName()) + 1);
                 }
             }
         }
+        return stats;
     }
 
 
