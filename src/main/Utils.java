@@ -98,8 +98,8 @@ public class Utils {
             }
         }
 
-        double baseline = Collections.max(recall.values()) / total;
-
+        double testBaseline = Collections.max(recall.values()) / total;
+        double trainBaseline = getTrainBaseline(classnames);
         //Calculate recall and precision
         for (int i = 0; i < classnames.size(); i++) {
             recall.put(classnames.get(i), table[i][i] / recall.get(classnames.get(i)));
@@ -107,14 +107,29 @@ public class Utils {
         }
         accuracy = diagonal / total;
 
-        for (String name : classnames) {
+
+
+
+         for (String name : classnames) {
 //            System.out.printf("Class: %s, recall: %.1f%%, precision %.1f%%.\n", name, recall.get(name)*100, precision.get(name)*100);
             log += String.format("Class: %s, recall: %.1f%%, precision %.1f%%.\n", name, recall.get(name)*100, precision.get(name)*100);
         }
-//        System.out.printf("Accuracy: %.1f%% with Baseline: %.1f%%.\n", (accuracy * 100), (baseline*100));
-        log += String.format("Accuracy: %.1f%% with Baseline: %.1f%%.\n", (accuracy * 100), (baseline*100));
+//        System.out.printf("Accuracy: %.1f%% with Baseline: %.1f%%.\n", (accuracy * 100), (testBaseline*100));
+        log += String.format("Accuracy: %.1f%% with (Train) Baseline: %.1f%% and (Test) Baseline: %.1f%%.\n", (accuracy * 100), (trainBaseline*100), (testBaseline*100));
 
 
+    }
+
+    private static double getTrainBaseline(List<String> classnames) {
+        int maxDocs = 0;
+        int totalDocs = 0;
+        for (String className : classnames) {
+            DataClass dataClass = DataClass.getClass(className);
+            maxDocs = Math.max(maxDocs, dataClass.getAmountOfDocs());
+            totalDocs += dataClass.getAmountOfDocs();
+        }
+
+        return (double) maxDocs / (double) totalDocs;
     }
 
 

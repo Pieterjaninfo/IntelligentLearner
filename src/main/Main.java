@@ -13,6 +13,8 @@ public class Main {
 
 
     public static void main(String[] args) {
+
+
         DocumentProcessing dc = new DocumentProcessing();
         Classifier cf = new Classifier();
 
@@ -47,6 +49,9 @@ public class Main {
 //        Utils.printTable(tab, list);
 //        Utils.getStatistics(tab, list);
 //        System.out.println(Utils.getLog());
+
+        //---------------------------------------------
+
 
     }
 
