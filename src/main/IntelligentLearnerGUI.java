@@ -102,7 +102,6 @@ public class IntelligentLearnerGUI extends Component {
         //Setup Combo Box
         classComboBox.setEnabled(false);
         //TODO: Fill with actual classes
-        for (String className : DataClass.getClasses().keySet()){ classComboBox.addItem(className); }
 
         // Disable userfile panel
         judgePanel.setVisible(false);
@@ -179,9 +178,19 @@ public class IntelligentLearnerGUI extends Component {
             }
         });
 
+        //Classify button in manual classification tab
         classifyButton.addActionListener((ActionEvent e) -> {
             //TODO: Classify the file!
-            classifyLabel.setText("<html>File classified as ...." +
+
+            HashMap<String, Integer> words = dc.scanDocument(fileFc.getSelectedFile().getAbsolutePath() + "\\");
+            DataClass dataClass = cf.multinomialClassifier(words);
+
+            classComboBox.removeAllItems();
+            for (String className : DataClass.getClasses().keySet()){
+                if (!className.equals(dataClass.getClassName())) classComboBox.addItem(className);
+            }
+
+            classifyLabel.setText("<html>File classified as " + dataClass.getClassName() +
                     "<br>Please give your feedback about the classification below!");
             judgePanel.setVisible(true);
         });

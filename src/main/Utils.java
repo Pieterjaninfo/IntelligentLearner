@@ -57,6 +57,7 @@ public class Utils {
         for (int i = 0; i< classnames.size(); i++) {
             log += String.format("%" + fontSize + "s", classnames.get(i));
         }
+        log += "   <--- Predicted Classes";
         log += "\n";
         for (int x = 0; x < table.length; x++) {
 
@@ -119,6 +120,8 @@ public class Utils {
         log += String.format("Accuracy: %.1f%% with (Train) Baseline: %.1f%% and (Test) Baseline: %.1f%%.\n", (accuracy * 100), (trainBaseline*100), (testBaseline*100));
         log += "\n\n";
     }
+
+
 
     private static double getTrainBaseline(List<String> classnames) {
         int maxDocs = 0;
