@@ -8,8 +8,8 @@ import java.util.*;
 public class Main {
 
 
-    private static String trainpath = "resources/corpus/train/";
-    private static String testpath = "resources/corpus/test/";
+    private static String trainpath = "resources/corpus2/train/";
+    private static String testpath = "resources/corpus2/test/";
 
 
     public static void main(String[] args) {
@@ -32,6 +32,22 @@ public class Main {
         int[][] table = Utils.createTable(stats);
         Utils.printTable(table, sortedClasses);
         Utils.getStatistics(table, sortedClasses);
+
+        System.out.println(Utils.getLog());
+
         //---------------------------------------------
+
+//        int[][] tab = new int[][] {
+//                {100,3,1},
+//                {10,30,1},
+//                {20,10,300}
+//        };
+//        List<String> list = Arrays.asList(new String[] {"F", "M", "O" });
+//        System.out.println("============================================================================");
+//        Utils.printTable(tab, list);
+//        Utils.getStatistics(tab, list);
+//        System.out.println(Utils.getLog());
+
     }
+
 }
