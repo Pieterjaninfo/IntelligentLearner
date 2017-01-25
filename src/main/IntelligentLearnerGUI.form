@@ -39,24 +39,6 @@
                       <text value="K Value (natural &gt;= 1)"/>
                     </properties>
                   </component>
-                  <component id="df7f9" class="javax.swing.JTextField" binding="kValueField">
-                    <constraints>
-                      <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="1" use-parent-layout="false">
-                        <preferred-size width="150" height="-1"/>
-                      </grid>
-                    </constraints>
-                    <properties>
-                      <text value=""/>
-                    </properties>
-                  </component>
-                  <component id="6e6a8" class="javax.swing.JTextField" binding="chiValueField" default-binding="true">
-                    <constraints>
-                      <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                        <preferred-size width="150" height="-1"/>
-                      </grid>
-                    </constraints>
-                    <properties/>
-                  </component>
                   <component id="849a5" class="javax.swing.JLabel">
                     <constraints>
                       <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
@@ -64,6 +46,18 @@
                     <properties>
                       <text value="Chi Value (real &gt;= 0.0)"/>
                     </properties>
+                  </component>
+                  <component id="d5959" class="javax.swing.JSpinner" binding="kValueField">
+                    <constraints>
+                      <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties/>
+                  </component>
+                  <component id="6183e" class="javax.swing.JSpinner" binding="chiValueField">
+                    <constraints>
+                      <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties/>
                   </component>
                 </children>
               </grid>
@@ -172,14 +166,6 @@
                       <text value="Incorrect classification"/>
                     </properties>
                   </component>
-                  <component id="addef" class="javax.swing.JRadioButton" binding="correctButton">
-                    <constraints>
-                      <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <text value="Correct classification"/>
-                    </properties>
-                  </component>
                   <component id="271ab" class="javax.swing.JButton" binding="finishButton" default-binding="true">
                     <constraints>
                       <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
@@ -208,6 +194,15 @@
                     </constraints>
                     <properties>
                       <text value="Update classifier"/>
+                    </properties>
+                  </component>
+                  <component id="addef" class="javax.swing.JRadioButton" binding="correctButton">
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <selected value="true"/>
+                      <text value="Correct classification"/>
                     </properties>
                   </component>
                 </children>

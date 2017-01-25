@@ -12,15 +12,16 @@ import java.io.File;
  * Created by Janko on 1/19/2017.
  */
 public class IntelligentLearnerGUI extends Component {
+    private boolean debug = true;
+
     private JFileChooser testFc;
     private JFileChooser fileFc;
-    private boolean debug = true;
     private JTabbedPane tabbedPane1;
     private JPanel mainPanel;
     private JPanel initTab;
     private JPanel useTab;
-    private JTextField kValueField;
-    private JTextField chiValueField;
+    private JSpinner kValueField;
+    private JSpinner chiValueField;
     private JButton openTrainDirButton;
     private JLabel trainDirLabel;
     private JButton trainButton;
@@ -65,10 +66,18 @@ public class IntelligentLearnerGUI extends Component {
     }
 
     public IntelligentLearnerGUI() {
+        //Set kValueField properties
+        SpinnerNumberModel kModel = new SpinnerNumberModel(1, 1, 1000, 1);
+        kValueField.setModel(kModel);
+
+        //Set chiValueField properties
+        SpinnerNumberModel chiModel = new SpinnerNumberModel(1.0, 0.0, 1000.0, 0.1);
+        chiValueField.setModel(chiModel);
+
         //Create new file chooser for training directory
         trainFc = new JFileChooser();
         trainFc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        trainLabel.setText(trainFc.getCurrentDirectory().getPath());
+        trainDirLabel.setText(trainFc.getCurrentDirectory().getPath());
 
         //Create new file chooser for classification file
         fileFc = new JFileChooser();
@@ -95,6 +104,8 @@ public class IntelligentLearnerGUI extends Component {
             classComboBox.addItem(sa[i]);
         }
 
+        // Disable userfile panel
+        judgePanel.setVisible(false);
         openTrainDirButton.addActionListener((ActionEvent e) -> {
             //Handle open button action.
             int returnVal = trainFc.showOpenDialog(IntelligentLearnerGUI.this);
@@ -125,8 +136,8 @@ public class IntelligentLearnerGUI extends Component {
 
         trainButton.addActionListener((ActionEvent e) -> {
             //TODO: Call classifier training method.
-            if (debug) System.out.println(kValueField.getText());
-            if (debug) System.out.println(chiValueField.getText());
+            if (debug) System.out.println(kValueField.getValue());
+            if (debug) System.out.println(chiValueField.getValue());
             trainLabel.setText("<html>Bayesian Network has been created!<br>" +
                     "Please go on to next tab to test it.");
         });
@@ -134,6 +145,7 @@ public class IntelligentLearnerGUI extends Component {
         correctButton.addActionListener((ActionEvent e) -> {
             //TODO: Perform action based on correct classification.
             incorrectButton.setSelected(false);
+            correctButton.setSelected(true);
             classComboBox.setEnabled(false);
 
         });
@@ -141,6 +153,7 @@ public class IntelligentLearnerGUI extends Component {
         incorrectButton.addActionListener((ActionEvent e) -> {
             //TODO: Perform action based on incorrect classification.
             correctButton.setSelected(false);
+            incorrectButton.setSelected(true);
             classComboBox.setEnabled(true);
         });
 
@@ -163,6 +176,7 @@ public class IntelligentLearnerGUI extends Component {
             //TODO: Classify the file!
             classifyLabel.setText("<html>File classified as ...." +
                     "<br>Please give your feedback about the classification below!");
+            judgePanel.setVisible(true);
         });
 
         finishButton.addActionListener((ActionEvent e) -> {
