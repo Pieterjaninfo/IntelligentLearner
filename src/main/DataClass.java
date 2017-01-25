@@ -31,7 +31,6 @@ public class DataClass {
 
     /**
      * Returns the amount of documents of al the classes combined.
-     * @return
      */
     public static int getTotalDocs() {
         int result = 0;
@@ -68,7 +67,7 @@ public class DataClass {
         if (classes.containsKey(className)) {
             return classes.get(className);
         } else {
-            System.out.println("[DataClass.java] There exists no class with classname: " + className + "!");
+            System.err.println("[DataClass.java] There exists no class with classname: " + className + "!");
             return null;
         }
     }
@@ -150,7 +149,7 @@ public class DataClass {
         if (!documents.containsKey(documentName)) {
             documents.put(documentName, words);
         } else {
-            System.out.println("Tried to add already existing document to the DataClass!");
+            System.err.println("[DataClass.java] Tried to add already existing document to the DataClass!");
         }
     }
 
@@ -161,7 +160,7 @@ public class DataClass {
         Tokenizer.removeStopwords(vocabulary);
         Tokenizer.removeThresholdViolatingWords(vocabulary);
 
-        HashSet<String> uselessWords = Tokenizer.getViableChiSquareWords(DataClass.getTotalVocabulary());
+        HashSet<String> uselessWords = Tokenizer.getHighestChiSquareWords(DataClass.getTotalVocabulary());
         vocabulary.keySet().removeAll(uselessWords);
     }
 

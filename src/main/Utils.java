@@ -10,6 +10,10 @@ public class Utils {
     /**
      * Creates the confusion matrix.
      */
+    private static String log = "";
+
+    public static String getLog() { return log; }
+
     public static int[][] createTable(HashMap<String, HashMap<String, Integer>> stats) {
         int[][] table = new int[stats.size()][stats.size()];
 
@@ -34,18 +38,39 @@ public class Utils {
      * Prints the confusion matrix.
      */
     public static void printTable(int[][] table, List<String> classnames) {
+//        for (int i = 0; i< classnames.size(); i++) {
+//            System.out.printf("\t  %2s", classnames.get(i));
+//        }
+//        System.out.print("\n");
+//        for (int x = 0; x < table.length; x++) {
+//            System.out.printf("%5s [", classnames.get(x));
+//            for (int y = 0; y < table[0].length; y++) {
+//                System.out.printf("%4d", table[x][y]);
+//            }
+//            System.out.println(" ]");
+//        }
+
+
+        int fontSize = getMaxLength(classnames);
+        log += String.format("%" + (fontSize + 2) + "s", " ");
         for (int i = 0; i< classnames.size(); i++) {
-//            System.out.print("\t " + classnames.get(i));
-            System.out.printf("\t  %2s", classnames.get(i));
+            log += String.format("%" + fontSize + "s", classnames.get(i));
         }
-        System.out.print("\n");
+        log += "\n";
         for (int x = 0; x < table.length; x++) {
-            System.out.printf("%5s [", classnames.get(x));
+
+            log += String.format("%" + fontSize + "s [", classnames.get(x));
             for (int y = 0; y < table[0].length; y++) {
-                System.out.printf("%4d", table[x][y]);
+                log += String.format("%" + fontSize + "d", table[x][y]);
             }
-            System.out.println(" ]");
+            log += " ]\n";
         }
+    }
+
+    public static int getMaxLength(List<String> classNames) {
+        int max = 4;
+        for (String className : classNames) { max = Math.max(max, className.length()); }
+        return max + 1;
     }
 
     /**
@@ -73,8 +98,8 @@ public class Utils {
             }
         }
 
-        double baseline = Collections.max(recall.values()) / total;
-
+        double testBaseline = Collections.max(recall.values()) / total;
+        double trainBaseline = getTrainBaseline(classnames);
         //Calculate recall and precision
         for (int i = 0; i < classnames.size(); i++) {
             recall.put(classnames.get(i), table[i][i] / recall.get(classnames.get(i)));
@@ -82,13 +107,31 @@ public class Utils {
         }
         accuracy = diagonal / total;
 
-        for (String name : classnames) {
-            System.out.printf("Class: %s, recall: %.1f%%, precision %.1f%%.\n", name, recall.get(name)*100, precision.get(name)*100);
+
+
+
+         for (String name : classnames) {
+//            System.out.printf("Class: %s, recall: %.1f%%, precision %.1f%%.\n", name, recall.get(name)*100, precision.get(name)*100);
+            log += String.format("Class: %s, recall: %.1f%%, precision %.1f%%.\n", name, recall.get(name)*100, precision.get(name)*100);
         }
-        System.out.printf("Accuracy: %.1f%% with Baseline: %.1f%%.\n", (accuracy * 100), (baseline*100));
+//        System.out.printf("Accuracy: %.1f%% with Baseline: %.1f%%.\n", (accuracy * 100), (testBaseline*100));
+        log += String.format("Accuracy: %.1f%% with (Train) Baseline: %.1f%% and (Test) Baseline: %.1f%%.\n", (accuracy * 100), (trainBaseline*100), (testBaseline*100));
 
 
     }
+
+    private static double getTrainBaseline(List<String> classnames) {
+        int maxDocs = 0;
+        int totalDocs = 0;
+        for (String className : classnames) {
+            DataClass dataClass = DataClass.getClass(className);
+            maxDocs = Math.max(maxDocs, dataClass.getAmountOfDocs());
+            totalDocs += dataClass.getAmountOfDocs();
+        }
+
+        return (double) maxDocs / (double) totalDocs;
+    }
+
 
 
 

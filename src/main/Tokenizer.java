@@ -1,5 +1,8 @@
 package main;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -159,6 +162,7 @@ public class Tokenizer {
         HashSet<String> lowestChiValues = new HashSet<>();
         TreeMap<Double, HashSet<String>> sortedMap = new TreeMap<>(Collections.reverseOrder());
         sortedMap.putAll(chiWords);
+        writeChiValues(sortedMap);
 
         int i = 0;
         A: for (Double chiValue : sortedMap.keySet()) {
@@ -219,6 +223,33 @@ public class Tokenizer {
             System.out.println(" ]");
         }
         System.out.print("\n");
+    }
+
+    public static void writeChiValues(TreeMap<Double, HashSet<String>> chiValues) {
+        String filepath = "resources/textfiles/chiValues.txt";
+        String line = "";
+
+        BufferedWriter writer = null;
+        try {
+            writer = new BufferedWriter(new FileWriter(filepath,true));
+
+            for (Double chiValue : chiValues.keySet()) {
+                for (String word : chiValues.get(chiValue)) {
+                    line = String.format("%20s: %.2f\n", word, chiValue);
+                    System.out.print(line);
+                    writer.write(line);
+                    writer.newLine();
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                writer.close();
+            } catch (Exception e) {
+            }
+        }
     }
 
 
