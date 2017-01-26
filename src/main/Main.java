@@ -8,8 +8,8 @@ import java.util.*;
 public class Main {
 
 
-    private static String trainpath = "resources/corpus2/train/";
-    private static String testpath = "resources/corpus2/test/";
+    private static String trainpath = "C:\\Users\\Pieter Jan\\IdeaProjects\\Intelligent Learner\\resources\\corpus\\train\\";
+    private static String testpath = "resources\\corpus\\test\\";
 
 
     public static void main(String[] args) {

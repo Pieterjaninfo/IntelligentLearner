@@ -6,13 +6,17 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Created by Janko on 1/19/2017.
  */
 public class IntelligentLearnerGUI extends Component {
-    private boolean debug = true;
+    private boolean debug = false;
 
     private JFileChooser testFc;
     private JFileChooser fileFc;
@@ -66,6 +70,9 @@ public class IntelligentLearnerGUI extends Component {
     }
 
     public IntelligentLearnerGUI() {
+        DocumentProcessing dc = new DocumentProcessing();
+        Classifier cf = new Classifier();
+
         //Set kValueField properties
         SpinnerNumberModel kModel = new SpinnerNumberModel(1, 1, null, 1);
         kValueField.setModel(kModel);
@@ -97,12 +104,6 @@ public class IntelligentLearnerGUI extends Component {
         //Setup Combo Box
         classComboBox.setEnabled(false);
         //TODO: Fill with actual classes
-        String[] sa = new String[2];
-        sa[0] = "Class1";
-        sa[1] = "Class2";
-        for (int i = 0; i < sa.length; i++ ){
-            classComboBox.addItem(sa[i]);
-        }
 
         // Disable userfile panel
         judgePanel.setVisible(false);
@@ -127,6 +128,7 @@ public class IntelligentLearnerGUI extends Component {
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 File testDir = testFc.getSelectedFile();
                 //TODO: Do something with the directory.
+
                 testDirLabel.setText(testDir.getPath());
                 if (debug) System.out.println("Opening: " + testDir.getName() + ".");
             } else {
@@ -134,10 +136,17 @@ public class IntelligentLearnerGUI extends Component {
             }
         });
 
+        //TRAIN THE CLASSES
         trainButton.addActionListener((ActionEvent e) -> {
             //TODO: Call classifier training method.
-            if (debug) System.out.println(kValueField.getValue());
-            if (debug) System.out.println(chiValueField.getValue());
+            String filepath = trainFc.getSelectedFile().getAbsolutePath() + "\\";
+            if (debug) System.out.println("path: " + filepath);
+            cf.setSmoothingFactor((int) kValueField.getValue());
+            Tokenizer.setChiSquareValue((double) chiValueField.getValue());
+            dc.scanTrainDocuments(filepath);
+            DataClass.setupClasses();
+            if (debug) System.out.println("K value: " + kValueField.getValue());
+            if (debug) System.out.println("CHI value: " + chiValueField.getValue());
             trainLabel.setText("<html>Bayesian Network has been created!<br>" +
                     "Please go on to next tab to test it.");
         });
@@ -163,7 +172,6 @@ public class IntelligentLearnerGUI extends Component {
 
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 File file = fileFc.getSelectedFile();
-                file.getName().endsWith(".txt");
                 //TODO: Do something with the file.
                 userFileLabel.setText(file.getName());
                 if(debug)System.out.println("Opening: " + file.getName() + ".");
@@ -172,9 +180,19 @@ public class IntelligentLearnerGUI extends Component {
             }
         });
 
+        //CLASSIFY SINGLE FILE BUTTON
         classifyButton.addActionListener((ActionEvent e) -> {
             //TODO: Classify the file!
-            classifyLabel.setText("<html>File classified as ...." +
+
+            HashMap<String, Integer> words = dc.scanDocument(fileFc.getSelectedFile().getAbsolutePath() + "\\");
+            DataClass dataClass = cf.multinomialClassifier(words);
+
+            classComboBox.removeAllItems();
+            for (String className : DataClass.getClasses().keySet()){
+                if (!className.equals(dataClass.getClassName())) classComboBox.addItem(className);
+            }
+
+            classifyLabel.setText("<html>File classified as " + dataClass.getClassName() +
                     "<br>Please give your feedback about the classification below!");
             judgePanel.setVisible(true);
         });
@@ -189,5 +207,31 @@ public class IntelligentLearnerGUI extends Component {
                 //TODO: add action when no radio button is selected.
             }
         });
+
+        // Test button in Automatic testing tab
+        testClassifierButton.addActionListener((ActionEvent e) -> {
+            String testpath = testFc.getSelectedFile().getAbsolutePath() + "\\";
+            System.out.println("TESTPATH: " + testpath);
+
+            HashMap<String, HashMap<String, Integer>> stats = dc.scanTestDocuments(testpath);
+
+            java.util.List<String> sortedClasses = new ArrayList(stats.keySet());
+            Collections.sort(sortedClasses);
+
+            int[][] table = Utils.createTable(stats);
+            Utils.printTable(table, sortedClasses);
+            Utils.getStatistics(table, sortedClasses);
+
+            String log = Utils.getLog();
+            logTextArea.append(getCurrentTime() + "\n");
+            logTextArea.append(log);
+            Utils.resetLog();
+        });
+    }
+
+    private String getCurrentTime() {
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        Date date = new Date();
+        return dateFormat.format(date);
     }
 }
