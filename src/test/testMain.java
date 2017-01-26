@@ -1,9 +1,6 @@
 package test;
 
-import main.Classifier;
-import main.DataClass;
-import main.DocumentProcessing;
-import main.Utils;
+import main.*;
 
 import java.util.*;
 
@@ -22,7 +19,11 @@ public class testMain {
         Classifier cf = new Classifier();
 
         //-------AUTOMATIC TRAINING AND TESTING---------------------
-        dc.scanTrainDocuments(trainpath);
+        try {
+            dc.scanTrainDocuments(trainpath);
+        } catch (EmptyFolderException e) {
+            e.printStackTrace();
+        }
         DataClass.setupClasses();
         System.out.println("Finished setting up all the classes.");
 

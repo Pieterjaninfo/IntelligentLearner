@@ -19,7 +19,11 @@ public class Main {
         Classifier cf = new Classifier();
 
         //-------AUTOMATIC TESTING---------------------
-        dc.scanTrainDocuments(trainpath);
+        try {
+            dc.scanTrainDocuments(trainpath);
+        } catch (EmptyFolderException e) {
+            e.printStackTrace();
+        }
         DataClass.setupClasses();
         System.out.println("Finished setting up all the classes.");
 
