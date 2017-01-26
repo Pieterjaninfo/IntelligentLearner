@@ -8,13 +8,15 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
  * Created by Janko on 1/19/2017.
  */
 public class IntelligentLearnerGUI extends Component {
-    private boolean debug = true;
+    private boolean debug = false;
 
     private JFileChooser testFc;
     private JFileChooser fileFc;
@@ -134,11 +136,11 @@ public class IntelligentLearnerGUI extends Component {
             }
         });
 
+        //TRAIN THE CLASSES
         trainButton.addActionListener((ActionEvent e) -> {
             //TODO: Call classifier training method.
             String filepath = trainFc.getSelectedFile().getAbsolutePath() + "\\";
-            System.out.println("path: " + filepath);
-
+            if (debug) System.out.println("path: " + filepath);
             cf.setSmoothingFactor((int) kValueField.getValue());
             Tokenizer.setChiSquareValue((double) chiValueField.getValue());
             dc.scanTrainDocuments(filepath);
@@ -178,7 +180,7 @@ public class IntelligentLearnerGUI extends Component {
             }
         });
 
-        //Classify button in manual classification tab
+        //CLASSIFY SINGLE FILE BUTTON
         classifyButton.addActionListener((ActionEvent e) -> {
             //TODO: Classify the file!
 
@@ -221,8 +223,15 @@ public class IntelligentLearnerGUI extends Component {
             Utils.getStatistics(table, sortedClasses);
 
             String log = Utils.getLog();
+            logTextArea.append(getCurrentTime() + "\n");
             logTextArea.append(log);
             Utils.resetLog();
         });
+    }
+
+    private String getCurrentTime() {
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        Date date = new Date();
+        return dateFormat.format(date);
     }
 }

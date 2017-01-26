@@ -39,19 +39,6 @@ public class Utils {
      * Prints the confusion matrix.
      */
     public static void printTable(int[][] table, List<String> classnames) {
-//        for (int i = 0; i< classnames.size(); i++) {
-//            System.out.printf("\t  %2s", classnames.get(i));
-//        }
-//        System.out.print("\n");
-//        for (int x = 0; x < table.length; x++) {
-//            System.out.printf("%5s [", classnames.get(x));
-//            for (int y = 0; y < table[0].length; y++) {
-//                System.out.printf("%4d", table[x][y]);
-//            }
-//            System.out.println(" ]");
-//        }
-
-
         int fontSize = getMaxLength(classnames);
         log += String.format("%" + (fontSize + 2) + "s", " ");
         for (int i = 0; i< classnames.size(); i++) {
@@ -69,7 +56,7 @@ public class Utils {
         }
     }
 
-    public static int getMaxLength(List<String> classNames) {
+    private static int getMaxLength(List<String> classNames) {
         int max = 4;
         for (String className : classNames) { max = Math.max(max, className.length()); }
         return max + 1;
@@ -112,13 +99,24 @@ public class Utils {
 
 
 
-         for (String name : classnames) {
-//            System.out.printf("Class: %s, recall: %.1f%%, precision %.1f%%.\n", name, recall.get(name)*100, precision.get(name)*100);
-            log += String.format("Class: %s, recall: %.1f%%, precision %.1f%%.\n", name, recall.get(name)*100, precision.get(name)*100);
-        }
-//        System.out.printf("Accuracy: %.1f%% with Baseline: %.1f%%.\n", (accuracy * 100), (testBaseline*100));
+//        for (String name : classnames) {
+//            log += String.format("Class: %s, recall: %.1f%%, precision %.1f%%.\n", name, recall.get(name)*100, precision.get(name)*100);
+//        }
+
+        log += "\n";
+        printStatistics(recall, precision, classnames);
         log += String.format("Accuracy: %.1f%% with (Train) Baseline: %.1f%% and (Test) Baseline: %.1f%%.\n", (accuracy * 100), (trainBaseline*100), (testBaseline*100));
         log += "\n\n";
+
+    }
+
+    public static void printStatistics(HashMap<String, Double> recall, HashMap<String, Double> precision, List<String> classNames) {
+
+        int formatSize = getMaxLength(classNames);
+        log += "   Recall   Precision\n";
+        for (String className : classNames) {
+            log += String.format("    %.3f       %.3f   %s\n", recall.get(className), precision.get(className), className);
+        }
     }
 
 
