@@ -1,12 +1,9 @@
 package main;
 
-import javafx.stage.FileChooser;
-
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -49,6 +46,10 @@ public class IntelligentLearnerGUI extends Component {
     private JButton testClassifierButton;
     private JPanel trainClfPanel;
     private JFileChooser trainFc;
+
+    private String selectedFileName = "";
+    private String selectedClassName = "";
+    private HashMap<String, Integer> selectedWords;
 
     public static void main(String[] args) {
         //Let style automatically adapt to the operating system.
@@ -105,11 +106,13 @@ public class IntelligentLearnerGUI extends Component {
         testFc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         testDirLabel.setText(testFc.getCurrentDirectory().getPath());
 
-        //Setup text area
+        //Setup Combo Box for manual classification
+        classComboBox.setEnabled(false);
+
+        //Setup automatic classification area
+        testClassifierButton.setEnabled(false);
         logTextArea.setEditable(false);
 
-        //Setup Combo Box
-        classComboBox.setEnabled(false);
         //TODO: Fill with actual classes
 
         openTrainDirButton.addActionListener((ActionEvent e) -> {
@@ -133,6 +136,7 @@ public class IntelligentLearnerGUI extends Component {
                 File testDir = testFc.getSelectedFile();
 
                 testDirLabel.setText(testDir.getPath());
+                testClassifierButton.setEnabled(true);
                 if (debug) System.out.println("Opening: " + testDir.getName() + ".");
             } else {
                 if (debug) System.out.println("Open command cancelled by user.");
@@ -219,6 +223,8 @@ public class IntelligentLearnerGUI extends Component {
         classifyButton.addActionListener((ActionEvent e) -> {
             HashMap<String, Integer> words = dc.scanDocument(fileFc.getSelectedFile().getAbsolutePath() + "\\");
             DataClass dataClass = cf.multinomialClassifier(words);
+            System.out.println("FILENAME: " + fileFc.getSelectedFile().getName());  //TODO REMOVE
+            setSelectedClass(fileFc.getSelectedFile().getName(), dataClass.getClassName(), words);  //Sets the className and words for use in other scope
 
             classComboBox.removeAllItems();
             for (String className : DataClass.getClasses().keySet()){
@@ -229,17 +235,38 @@ public class IntelligentLearnerGUI extends Component {
                     "<br>Please give your feedback about the classification below!");
 
             //Enable result elements.
-            for (Component c : judgePanel.getComponents()){ c.setEnabled(true);}
+            for (Component c : judgePanel.getComponents()){ c.setEnabled(true); }
+            if (!incorrectButton.isSelected()) classComboBox.setEnabled(false);
         });
 
         finishButton.addActionListener((ActionEvent e) -> {
             boolean update = updateCheckBox.isSelected();
             if(correctButton.isSelected()){
                 //TODO: action when correct classification.
+                if (update) {
+                    DataClass dataClass = DataClass.getClass(selectedClassName);
+                    dataClass.addDocument(selectedFileName, selectedWords);
+
+                    //Re-train the specific classes
+                    DataClass.setupClasses();
+                    System.out.printf("Updated class: %s with file %s.\n", dataClass.getClassName(), selectedFileName);
+                }
             } else if (incorrectButton.isSelected()){
                 //TODO: update classifier based on file.
+                if (update) {
+                    DataClass dataClass = DataClass.getClass((String) classComboBox.getSelectedItem());
+                    dataClass.addDocument(selectedFileName, selectedWords);
+
+                    //Re-train the specific classes
+                    DataClass.setupClasses();
+                    System.out.printf("Updated class: %s with file %s.\n", dataClass.getClassName(), selectedFileName);
+                }
             } else {
                 //TODO: add action when no radio button is selected.
+                System.err.println("[IntelligentLearnerGUI.java] Error occurred: no radioButton selected");
+            }
+            if (update) {
+                System.out.println("[IntelligentLearnerGUI.java] Updated classifier with selected file.");
             }
         });
 
@@ -269,5 +296,11 @@ public class IntelligentLearnerGUI extends Component {
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         Date date = new Date();
         return dateFormat.format(date);
+    }
+
+    private void setSelectedClass(String fileName, String className, HashMap<String, Integer> words) {
+        this.selectedFileName = fileName;
+        this.selectedClassName = className;
+        this.selectedWords = words;
     }
 }

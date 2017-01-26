@@ -24,6 +24,7 @@ public class DataClass {
      */
     public static void setupClasses() {
         for (DataClass dataClass : getClasses().values()) {
+            dataClass.clearVocabulary();
             dataClass.extractVocabulary();
             dataClass.filterWords();
         }
@@ -124,6 +125,8 @@ public class DataClass {
         }
         return amount;
     }
+
+    public void clearVocabulary() { vocabulary.clear(); }
 
     public void extractVocabulary() {
         for (HashMap<String, Integer> words : documents.values()) {

@@ -306,7 +306,7 @@
                       <component id="211ca" class="javax.swing.JTextArea" binding="logTextArea">
                         <constraints/>
                         <properties>
-                          <columns value="77"/>
+                          <columns value="80"/>
                           <rows value="12"/>
                         </properties>
                       </component>
