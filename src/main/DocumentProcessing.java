@@ -38,11 +38,14 @@ public class DocumentProcessing {
      * Iterates through the given map and scans all the files inside.
      * @param path The path of the directory containing all the files
      */
-    private void scanTrainDocumentsInDirectory(String path) {
+    private void scanTrainDocumentsInDirectory(String path) throws EmptyFolderException {
         File folder = new File(path);
         File[] filesList = folder.listFiles();
 
         //List through all the documents in the corresponding class directory
+        if (filesList == null){
+            throw new EmptyFolderException("The selected folder does not contain any .txt files.");
+        }
         for(File file : filesList) {
             if(file.isFile() && file.getName().endsWith(".txt")) {
                 DataClass.getClass(file.getParentFile().getName()).addDocument(file.getName(), scanDocument(file.getPath()));
@@ -56,7 +59,7 @@ public class DocumentProcessing {
     /**
      * Scan all the documents in the Train folder.
      */
-    public void scanTrainDocuments(String trainpath) {
+    public void scanTrainDocuments(String trainpath) throws EmptyFolderException {
         File folder = new File(trainpath);
         File[] filesList = folder.listFiles();
 

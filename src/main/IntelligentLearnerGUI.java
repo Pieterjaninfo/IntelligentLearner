@@ -47,6 +47,7 @@ public class IntelligentLearnerGUI extends Component {
     private JCheckBox updateCheckBox;
     private JTextArea logTextArea;
     private JButton testClassifierButton;
+    private JPanel trainClfPanel;
     private JFileChooser trainFc;
 
     public static void main(String[] args) {
@@ -74,17 +75,22 @@ public class IntelligentLearnerGUI extends Component {
         DocumentProcessing dc = new DocumentProcessing();
         Classifier cf = new Classifier();
 
+        //Disable use and test tabs
+        tabbedPane1.setEnabledAt(1,false);
+        tabbedPane1.setEnabledAt(2, false);
+
         //Set kValueField properties
-        SpinnerNumberModel kModel = new SpinnerNumberModel(1, 1, 1000, 1);
+        SpinnerNumberModel kModel = new SpinnerNumberModel(1, 1, null, 1);
         kValueField.setModel(kModel);
 
         //Set chiValueField properties
-        SpinnerNumberModel chiModel = new SpinnerNumberModel(1.0, 0.0, 1000.0, 0.1);
+        SpinnerNumberModel chiModel = new SpinnerNumberModel(0.0, 0.0, null, 0.1);
         chiValueField.setModel(chiModel);
 
         //Create new file chooser for training directory
         trainFc = new JFileChooser();
         trainFc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        trainFc.setSelectedFile(trainFc.getCurrentDirectory());
         trainDirLabel.setText(trainFc.getCurrentDirectory().getPath());
 
         //Create new file chooser for classification file
@@ -106,15 +112,12 @@ public class IntelligentLearnerGUI extends Component {
         classComboBox.setEnabled(false);
         //TODO: Fill with actual classes
 
-        // Disable userfile panel
-        judgePanel.setVisible(false);
         openTrainDirButton.addActionListener((ActionEvent e) -> {
             //Handle open button action.
             int returnVal = trainFc.showOpenDialog(IntelligentLearnerGUI.this);
 
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 File trainDir = trainFc.getSelectedFile();
-                //TODO: Do something with the directory.
                 trainDirLabel.setText(trainDir.getPath());
                 if(debug)System.out.println("Opening: " + trainDir.getName() + ".");
             } else {
@@ -128,7 +131,6 @@ public class IntelligentLearnerGUI extends Component {
 
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 File testDir = testFc.getSelectedFile();
-                //TODO: Do something with the directory.
 
                 testDirLabel.setText(testDir.getPath());
                 if (debug) System.out.println("Opening: " + testDir.getName() + ".");
@@ -139,17 +141,49 @@ public class IntelligentLearnerGUI extends Component {
 
         //TRAIN THE CLASSES
         trainButton.addActionListener((ActionEvent e) -> {
-            //TODO: Call classifier training method.
-            String filepath = trainFc.getSelectedFile().getAbsolutePath() + "\\";
-            if (debug) System.out.println("path: " + filepath);
-            cf.setSmoothingFactor((int) kValueField.getValue());
-            Tokenizer.setChiSquareValue((double) chiValueField.getValue());
-            dc.scanTrainDocuments(filepath);
-            DataClass.setupClasses();
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    ImageIcon loading = new ImageIcon("resources/images/ajax-loader.gif");
+                    trainLabel.setIcon(loading);
+                    trainLabel.setText("Please wait...");
+
+                }
+            });
+
+            //Start training the classifier on a new thread
+            Thread trainThread = new Thread() {
+                public void run() {
+                    String filepath = trainFc.getSelectedFile().getAbsolutePath() + "\\";
+                    if (debug) System.out.println("path: " + filepath);
+                    cf.setSmoothingFactor((int) kValueField.getValue());
+                    Tokenizer.setChiSquareValue((double) chiValueField.getValue());
+                    try {
+                        dc.scanTrainDocuments(filepath);
+                    } catch (EmptyFolderException e1) {
+                        trainLabel.setIcon(null);
+                        trainLabel.setText("<html>The selected folder did not contain any .txt files.<br>" +
+                                "Please select a new training folder.");
+                        e1.printStackTrace();
+                        return;
+                    }
+                    DataClass.setupClasses();
+                    // Activate relevant UI parts after classifier training is complete.
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            tabbedPane1.setEnabledAt(1, true);
+                            tabbedPane1.setEnabledAt(2, true);
+                            trainLabel.setIcon(null);
+                            trainLabel.setText("<html>Bayesian Network has been created!<br>" +
+                                    "Please go on to next tab to test it.");
+                        }
+                    });
+                }
+            };
+            trainThread.start();
             if (debug) System.out.println("K value: " + kValueField.getValue());
             if (debug) System.out.println("CHI value: " + chiValueField.getValue());
-            trainLabel.setText("<html>Bayesian Network has been created!<br>" +
-                    "Please go on to next tab to test it.");
         });
 
         correctButton.addActionListener((ActionEvent e) -> {
@@ -173,8 +207,8 @@ public class IntelligentLearnerGUI extends Component {
 
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 File file = fileFc.getSelectedFile();
-                //TODO: Do something with the file.
                 userFileLabel.setText(file.getName());
+                classifyButton.setEnabled(true);
                 if(debug)System.out.println("Opening: " + file.getName() + ".");
             } else {
                 if(debug)System.out.println("Open command cancelled by user.");
@@ -183,8 +217,6 @@ public class IntelligentLearnerGUI extends Component {
 
         //CLASSIFY SINGLE FILE BUTTON
         classifyButton.addActionListener((ActionEvent e) -> {
-            //TODO: Classify the file!
-
             HashMap<String, Integer> words = dc.scanDocument(fileFc.getSelectedFile().getAbsolutePath() + "\\");
             DataClass dataClass = cf.multinomialClassifier(words);
 
@@ -195,7 +227,9 @@ public class IntelligentLearnerGUI extends Component {
 
             classifyLabel.setText("<html>File classified as " + dataClass.getClassName() +
                     "<br>Please give your feedback about the classification below!");
-            judgePanel.setVisible(true);
+
+            //Enable result elements.
+            for (Component c : judgePanel.getComponents()){ c.setEnabled(true);}
         });
 
         finishButton.addActionListener((ActionEvent e) -> {
