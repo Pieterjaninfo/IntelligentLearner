@@ -67,11 +67,11 @@ public class IntelligentLearnerGUI extends Component {
 
     public IntelligentLearnerGUI() {
         //Set kValueField properties
-        SpinnerNumberModel kModel = new SpinnerNumberModel(1, 1, 1000, 1);
+        SpinnerNumberModel kModel = new SpinnerNumberModel(1, 1, null, 1);
         kValueField.setModel(kModel);
 
         //Set chiValueField properties
-        SpinnerNumberModel chiModel = new SpinnerNumberModel(1.0, 0.0, 1000.0, 0.1);
+        SpinnerNumberModel chiModel = new SpinnerNumberModel(0.0, 0.0, null, 0.1);
         chiValueField.setModel(chiModel);
 
         //Create new file chooser for training directory
