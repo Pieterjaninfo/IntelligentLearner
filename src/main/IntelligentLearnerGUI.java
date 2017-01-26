@@ -11,6 +11,7 @@ import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.List;
 
 /**
  * Created by Janko on 1/19/2017.
@@ -215,7 +216,7 @@ public class IntelligentLearnerGUI extends Component {
 
             HashMap<String, HashMap<String, Integer>> stats = dc.scanTestDocuments(testpath);
 
-            java.util.List<String> sortedClasses = new ArrayList(stats.keySet());
+            List<String> sortedClasses = new ArrayList(stats.keySet());
             Collections.sort(sortedClasses);
 
             int[][] table = Utils.createTable(stats);
@@ -229,6 +230,7 @@ public class IntelligentLearnerGUI extends Component {
         });
     }
 
+    // Returns the current date and time
     private String getCurrentTime() {
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         Date date = new Date();
