@@ -1,16 +1,14 @@
 package main;
 
-import javafx.stage.FileChooser;
-
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.List;
 
 /**
  * Created by Janko on 1/19/2017.
@@ -47,7 +45,12 @@ public class IntelligentLearnerGUI extends Component {
     private JTextArea logTextArea;
     private JButton testClassifierButton;
     private JPanel trainClfPanel;
+    private JCheckBox updateClassifierCheckBox;
     private JFileChooser trainFc;
+
+    private String selectedFileName = "";
+    private String selectedClassName = "";
+    private HashMap<String, Integer> selectedWords;
 
     public static void main(String[] args) {
         //Let style automatically adapt to the operating system.
@@ -104,11 +107,13 @@ public class IntelligentLearnerGUI extends Component {
         testFc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         testDirLabel.setText(testFc.getCurrentDirectory().getPath());
 
-        //Setup text area
+        //Setup Combo Box for manual classification
+        classComboBox.setEnabled(false);
+
+        //Setup automatic classification area
+        testClassifierButton.setEnabled(false);
         logTextArea.setEditable(false);
 
-        //Setup Combo Box
-        classComboBox.setEnabled(false);
         //TODO: Fill with actual classes
 
         openTrainDirButton.addActionListener((ActionEvent e) -> {
@@ -132,6 +137,7 @@ public class IntelligentLearnerGUI extends Component {
                 File testDir = testFc.getSelectedFile();
 
                 testDirLabel.setText(testDir.getPath());
+                testClassifierButton.setEnabled(true);
                 if (debug) System.out.println("Opening: " + testDir.getName() + ".");
             } else {
                 if (debug) System.out.println("Open command cancelled by user.");
@@ -143,6 +149,7 @@ public class IntelligentLearnerGUI extends Component {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
+                    trainButton.setEnabled(false);
                     ImageIcon loading = new ImageIcon("resources/images/ajax-loader.gif");
                     trainLabel.setIcon(loading);
                     trainLabel.setText("Please wait...");
@@ -171,6 +178,7 @@ public class IntelligentLearnerGUI extends Component {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
+                            trainButton.setEnabled(true);
                             tabbedPane1.setEnabledAt(1, true);
                             tabbedPane1.setEnabledAt(2, true);
                             trainLabel.setIcon(null);
@@ -218,6 +226,8 @@ public class IntelligentLearnerGUI extends Component {
         classifyButton.addActionListener((ActionEvent e) -> {
             HashMap<String, Integer> words = dc.scanDocument(fileFc.getSelectedFile().getAbsolutePath() + "\\");
             DataClass dataClass = cf.multinomialClassifier(words);
+            if (debug) System.out.println("FILENAME: " + fileFc.getSelectedFile().getName());
+            setSelectedClass(fileFc.getSelectedFile().getName(), dataClass.getClassName(), words);  //Sets the className and words for use in other scope
 
             classComboBox.removeAllItems();
             for (String className : DataClass.getClasses().keySet()){
@@ -228,44 +238,110 @@ public class IntelligentLearnerGUI extends Component {
                     "<br>Please give your feedback about the classification below!");
 
             //Enable result elements.
-            for (Component c : judgePanel.getComponents()){ c.setEnabled(true);}
+            for (Component c : judgePanel.getComponents()){ c.setEnabled(true); }
+            if (!incorrectButton.isSelected()) classComboBox.setEnabled(false);
         });
 
         finishButton.addActionListener((ActionEvent e) -> {
             boolean update = updateCheckBox.isSelected();
             if(correctButton.isSelected()){
                 //TODO: action when correct classification.
+                if (update) {
+                    DataClass dataClass = DataClass.getClass(selectedClassName);
+                    dataClass.addDocument(selectedFileName, selectedWords);
+
+                    //Re-train the specific classes
+//                    DataClass.setupClasses();
+                    dataClass.clearVocabulary();
+                    dataClass.extractVocabulary();
+                    dataClass.filterWords();
+
+                    System.out.printf("Updated class: %s with file %s.\n", dataClass.getClassName(), selectedFileName);
+                }
             } else if (incorrectButton.isSelected()){
                 //TODO: update classifier based on file.
+                if (update) {
+                    DataClass dataClass = DataClass.getClass((String) classComboBox.getSelectedItem());
+                    dataClass.addDocument(selectedFileName, selectedWords);
+
+                    //Re-train the specific classes
+//                    DataClass.setupClasses();
+                    dataClass.clearVocabulary();
+                    dataClass.extractVocabulary();
+                    dataClass.filterWords();
+
+                    System.out.printf("Updated class: %s with file %s.\n", dataClass.getClassName(), selectedFileName);
+                }
             } else {
                 //TODO: add action when no radio button is selected.
+                System.err.println("[IntelligentLearnerGUI.java] Error occurred: no radioButton selected");
+            }
+            if (update) {
+                System.out.println("[IntelligentLearnerGUI.java] Updated classifier with selected file.");
             }
         });
 
         // Test button in Automatic testing tab
         testClassifierButton.addActionListener((ActionEvent e) -> {
-            String testpath = testFc.getSelectedFile().getAbsolutePath() + "\\";
-            System.out.println("TESTPATH: " + testpath);
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    ImageIcon loading = new ImageIcon("resources/images/ajax-loader.gif");
+                    testClassifierButton.setEnabled(false);
+                    testClassifierButton.setIcon(loading);
+                    testClassifierButton.setText("Please wait...");
+                }
+            });
+            //Start training the classifier on a new thread
+            Thread testThread = new Thread() {
+                public void run() {
+                    if (updateCheckBox.isSelected()) {
+                        //TODO: update with the test files.
 
-            HashMap<String, HashMap<String, Integer>> stats = dc.scanTestDocuments(testpath);
+                    };
 
-            java.util.List<String> sortedClasses = new ArrayList(stats.keySet());
-            Collections.sort(sortedClasses);
+                    String testpath = testFc.getSelectedFile().getAbsolutePath() + "\\";
+                    if (debug) System.out.println("TESTPATH: " + testpath);
 
-            int[][] table = Utils.createTable(stats);
-            Utils.printTable(table, sortedClasses);
-            Utils.getStatistics(table, sortedClasses);
+                    HashMap<String, HashMap<String, Integer>> stats = dc.scanTestDocuments(testpath);
 
-            String log = Utils.getLog();
-            logTextArea.append(getCurrentTime() + "\n");
-            logTextArea.append(log);
-            Utils.resetLog();
+                    List<String> sortedClasses = new ArrayList(stats.keySet());
+                    Collections.sort(sortedClasses);
+
+                    int[][] table = Utils.createTable(stats);
+                    Utils.printTable(table, sortedClasses);
+                    Utils.getStatistics(table, sortedClasses);
+
+                    String log = Utils.getLog();
+                    logTextArea.append(getCurrentTime() + "\n");
+                    logTextArea.append(log);
+                    Utils.resetLog();
+
+                    //Set button back to default text
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            testClassifierButton.setEnabled(true);
+                            testClassifierButton.setIcon(null);
+                            testClassifierButton.setText("Test Classifier");
+                        }
+                    });
+                }
+            };
+            testThread.start();
         });
     }
 
+    // Returns the current date and time
     private String getCurrentTime() {
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         Date date = new Date();
         return dateFormat.format(date);
+    }
+
+    private void setSelectedClass(String fileName, String className, HashMap<String, Integer> words) {
+        this.selectedFileName = fileName;
+        this.selectedClassName = className;
+        this.selectedWords = words;
     }
 }

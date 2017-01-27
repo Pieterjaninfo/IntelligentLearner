@@ -7,14 +7,14 @@ import java.util.*;
  */
 public class Utils {
 
-    /**
-     * Creates the confusion matrix.
-     */
     private static String log = "";
 
     public static String getLog() { return log; }
     public static void resetLog() { log = ""; }
 
+    /**
+     * Creates the confusion matrix.
+     */
     public static int[][] createTable(HashMap<String, HashMap<String, Integer>> stats) {
         int[][] table = new int[stats.size()][stats.size()];
 
@@ -96,13 +96,6 @@ public class Utils {
         }
         accuracy = diagonal / total;
 
-
-
-
-//        for (String name : classnames) {
-//            log += String.format("Class: %s, recall: %.1f%%, precision %.1f%%.\n", name, recall.get(name)*100, precision.get(name)*100);
-//        }
-
         log += "\n";
         printStatistics(recall, precision, classnames);
         log += String.format("Accuracy: %.1f%% with (Train) Baseline: %.1f%% and (Test) Baseline: %.1f%%.\n", (accuracy * 100), (trainBaseline*100), (testBaseline*100));
@@ -118,8 +111,6 @@ public class Utils {
             log += String.format("    %.3f       %.3f   %s\n", recall.get(className), precision.get(className), className);
         }
     }
-
-
 
     private static double getTrainBaseline(List<String> classnames) {
         int maxDocs = 0;

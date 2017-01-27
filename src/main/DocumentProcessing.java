@@ -65,7 +65,8 @@ public class DocumentProcessing {
 
         //List through all the class directories
         for (File file : filesList) {
-            new DataClass(file.getName());                                      //Create the class
+            if (DataClass.getClass(file.getName()) == null) { new DataClass(file.getName()); }      //Create the class if it does not exist
+//            new DataClass(file.getName());                                                        //Create the class
             scanTrainDocumentsInDirectory(trainpath + file.getName());
         }
     }

@@ -24,6 +24,7 @@ public class DataClass {
      */
     public static void setupClasses() {
         for (DataClass dataClass : getClasses().values()) {
+            dataClass.clearVocabulary();
             dataClass.extractVocabulary();
             dataClass.filterWords();
         }
@@ -67,7 +68,7 @@ public class DataClass {
         if (classes.containsKey(className)) {
             return classes.get(className);
         } else {
-            System.err.println("[DataClass.java] There exists no class with classname: " + className + "!");
+            //System.err.println("[DataClass.java] There exists no class with classname: " + className + "!");
             return null;
         }
     }
@@ -125,6 +126,8 @@ public class DataClass {
         return amount;
     }
 
+    public void clearVocabulary() { vocabulary.clear(); amountOfWords = 0; }
+
     public void extractVocabulary() {
         for (HashMap<String, Integer> words : documents.values()) {
             //for each fileMap
@@ -160,7 +163,7 @@ public class DataClass {
         Tokenizer.removeStopwords(vocabulary);
         Tokenizer.removeThresholdViolatingWords(vocabulary);
 
-        HashSet<String> uselessWords = Tokenizer.getHighestChiSquareWords(DataClass.getTotalVocabulary());
+        HashSet<String> uselessWords = Tokenizer.getViableChiSquareWords(DataClass.getTotalVocabulary());
         vocabulary.keySet().removeAll(uselessWords);
     }
 
