@@ -149,6 +149,7 @@ public class IntelligentLearnerGUI extends Component {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
+                    trainButton.setEnabled(false);
                     ImageIcon loading = new ImageIcon("resources/images/ajax-loader.gif");
                     trainLabel.setIcon(loading);
                     trainLabel.setText("Please wait...");
@@ -177,6 +178,7 @@ public class IntelligentLearnerGUI extends Component {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
+                            trainButton.setEnabled(true);
                             tabbedPane1.setEnabledAt(1, true);
                             tabbedPane1.setEnabledAt(2, true);
                             trainLabel.setIcon(null);
@@ -279,27 +281,52 @@ public class IntelligentLearnerGUI extends Component {
 
         // Test button in Automatic testing tab
         testClassifierButton.addActionListener((ActionEvent e) -> {
-            if (updateCheckBox.isSelected()) {
-                //TODO: update with the test files.
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    ImageIcon loading = new ImageIcon("resources/images/ajax-loader.gif");
+                    testClassifierButton.setEnabled(false);
+                    testClassifierButton.setIcon(loading);
+                    testClassifierButton.setText("Please wait...");
+                }
+            });
+            //Start training the classifier on a new thread
+            Thread testThread = new Thread() {
+                public void run() {
+                    if (updateCheckBox.isSelected()) {
+                        //TODO: update with the test files.
 
+                    };
+
+                    String testpath = testFc.getSelectedFile().getAbsolutePath() + "\\";
+                    if (debug) System.out.println("TESTPATH: " + testpath);
+
+                    HashMap<String, HashMap<String, Integer>> stats = dc.scanTestDocuments(testpath);
+
+                    List<String> sortedClasses = new ArrayList(stats.keySet());
+                    Collections.sort(sortedClasses);
+
+                    int[][] table = Utils.createTable(stats);
+                    Utils.printTable(table, sortedClasses);
+                    Utils.getStatistics(table, sortedClasses);
+
+                    String log = Utils.getLog();
+                    logTextArea.append(getCurrentTime() + "\n");
+                    logTextArea.append(log);
+                    Utils.resetLog();
+
+                    //Set button back to default text
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            testClassifierButton.setEnabled(true);
+                            testClassifierButton.setIcon(null);
+                            testClassifierButton.setText("Test Classifier");
+                        }
+                    });
+                }
             };
-
-            String testpath = testFc.getSelectedFile().getAbsolutePath() + "\\";
-            if (debug) System.out.println("TESTPATH: " + testpath);
-
-            HashMap<String, HashMap<String, Integer>> stats = dc.scanTestDocuments(testpath);
-
-            List<String> sortedClasses = new ArrayList(stats.keySet());
-            Collections.sort(sortedClasses);
-
-            int[][] table = Utils.createTable(stats);
-            Utils.printTable(table, sortedClasses);
-            Utils.getStatistics(table, sortedClasses);
-
-            String log = Utils.getLog();
-            logTextArea.append(getCurrentTime() + "\n");
-            logTextArea.append(log);
-            Utils.resetLog();
+            testThread.start();
         });
     }
 
