@@ -2,6 +2,7 @@ package main;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -46,11 +47,17 @@ public class IntelligentLearnerGUI extends Component {
     private JButton testClassifierButton;
     private JPanel trainClfPanel;
     private JCheckBox updateClassifierCheckBox;
+    private JSpinner intSpinner;
+    private JRadioButton chiSquareBtn;
+    private JRadioButton maxVocabBtn;
+    private JLabel chiLabel;
     private JFileChooser trainFc;
 
     private String selectedFileName = "";
     private String selectedClassName = "";
     private HashMap<String, Integer> selectedWords;
+    boolean useChiValue = false;
+
 
     public static void main(String[] args) {
         //Let style automatically adapt to the operating system.
@@ -86,6 +93,7 @@ public class IntelligentLearnerGUI extends Component {
         kValueField.setModel(kModel);
 
         //Set chiValueField properties
+        SpinnerNumberModel intModel = new SpinnerNumberModel(100, 100, null, 50);
         SpinnerNumberModel chiModel = new SpinnerNumberModel(0.0, 0.0, null, 0.1);
         chiValueField.setModel(chiModel);
 
@@ -113,8 +121,25 @@ public class IntelligentLearnerGUI extends Component {
         //Setup automatic classification area
         testClassifierButton.setEnabled(false);
         logTextArea.setEditable(false);
+        DefaultCaret caret = (DefaultCaret) logTextArea.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+
 
         //TODO: Fill with actual classes
+
+        chiSquareBtn.addActionListener((ActionEvent e) -> {
+            chiSquareBtn.setSelected(true);
+            maxVocabBtn.setSelected(false);
+            chiValueField.setModel(chiModel);
+            chiLabel.setText("Chi Value (real >= 0.0)");
+        });
+
+        maxVocabBtn.addActionListener((ActionEvent e) -> {
+            maxVocabBtn.setSelected(true);
+            chiSquareBtn.setSelected(false);
+            chiValueField.setModel(intModel);
+            chiLabel.setText("Max vocabulary size (natural >= 100)");
+        });
 
         openTrainDirButton.addActionListener((ActionEvent e) -> {
             //Handle open button action.
@@ -162,8 +187,14 @@ public class IntelligentLearnerGUI extends Component {
                 public void run() {
                     String filepath = trainFc.getSelectedFile().getAbsolutePath() + "\\";
                     if (debug) System.out.println("path: " + filepath);
+                    if (chiSquareBtn.isSelected()) { useChiValue = true; }
                     cf.setSmoothingFactor((int) kValueField.getValue());
-                    Tokenizer.setChiSquareValue((double) chiValueField.getValue());
+
+                    if (useChiValue) {
+                        Tokenizer.setChiSquareValue((double) chiValueField.getValue());
+                    } else {
+                        Tokenizer.setMaxChiVocabulary((int) chiValueField.getValue());
+                    }
                     try {
                         dc.scanTrainDocuments(filepath);
                     } catch (EmptyFolderException e1) {
@@ -173,7 +204,8 @@ public class IntelligentLearnerGUI extends Component {
                         e1.printStackTrace();
                         return;
                     }
-                    DataClass.setupClasses();
+                    DataClass.setupClasses(useChiValue);
+
                     // Activate relevant UI parts after classifier training is complete.
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
@@ -251,12 +283,11 @@ public class IntelligentLearnerGUI extends Component {
                     dataClass.addDocument(selectedFileName, selectedWords);
 
                     //Re-train the specific classes
-//                    DataClass.setupClasses();
                     dataClass.clearVocabulary();
                     dataClass.extractVocabulary();
-                    dataClass.filterWords();
+                    dataClass.filterWords(useChiValue);
 
-                    System.out.printf("Updated class: %s with file %s.\n", dataClass.getClassName(), selectedFileName);
+                    if (debug) System.out.printf("Updated class: %s with file %s.\n", dataClass.getClassName(), selectedFileName);
                 }
             } else if (incorrectButton.isSelected()){
                 //TODO: update classifier based on file.
@@ -265,12 +296,11 @@ public class IntelligentLearnerGUI extends Component {
                     dataClass.addDocument(selectedFileName, selectedWords);
 
                     //Re-train the specific classes
-//                    DataClass.setupClasses();
                     dataClass.clearVocabulary();
                     dataClass.extractVocabulary();
-                    dataClass.filterWords();
+                    dataClass.filterWords(useChiValue);
 
-                    System.out.printf("Updated class: %s with file %s.\n", dataClass.getClassName(), selectedFileName);
+                    if (debug) System.out.printf("Updated class: %s with file %s.\n", dataClass.getClassName(), selectedFileName);
                 }
             } else {
                 //TODO: add action when no radio button is selected.
@@ -292,18 +322,15 @@ public class IntelligentLearnerGUI extends Component {
                     testClassifierButton.setText("Please wait...");
                 }
             });
-            //Start training the classifier on a new thread
+            //Start testing the classifier on a new thread
             Thread testThread = new Thread() {
                 public void run() {
-                    if (updateCheckBox.isSelected()) {
-                        //TODO: update with the test files.
-
-                    };
+                    boolean updateClassifier = updateClassifierCheckBox.isSelected();
 
                     String testpath = testFc.getSelectedFile().getAbsolutePath() + "\\";
                     if (debug) System.out.println("TESTPATH: " + testpath);
 
-                    HashMap<String, HashMap<String, Integer>> stats = dc.scanTestDocuments(testpath);
+                    HashMap<String, HashMap<String, Integer>> stats = dc.scanTestDocuments(testpath, updateClassifier, useChiValue);
 
                     List<String> sortedClasses = new ArrayList(stats.keySet());
                     Collections.sort(sortedClasses);
@@ -313,9 +340,12 @@ public class IntelligentLearnerGUI extends Component {
                     Utils.getStatistics(table, sortedClasses);
 
                     String log = Utils.getLog();
+                    logTextArea.append("\n");
                     logTextArea.append(getCurrentTime() + "\n");
                     logTextArea.append(log);
                     Utils.resetLog();
+
+//                    DataClass.printClassesInfo();
 
                     //Set button back to default text
                     SwingUtilities.invokeLater(new Runnable() {
@@ -330,6 +360,7 @@ public class IntelligentLearnerGUI extends Component {
             };
             testThread.start();
         });
+
     }
 
     // Returns the current date and time

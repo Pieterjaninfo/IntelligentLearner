@@ -1,5 +1,6 @@
 package main;
 
+import javax.xml.crypto.Data;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -20,15 +21,16 @@ public class Tokenizer {
     private static int countMinThreshold = 0;       // How many words below threshold were deleted
     private static int countMaxThreshold = 0;       // How many words above threshold were deleted
 
-    private static double chiSquareValue = 1.0;       // CHI SQUARE VALUE FOR FILTERING OUT
-    private static int MAX_CHI_WORDS = 20000;             // Amount of highest chi square words allowed
+    private static double chiSquareValue = 0.0;       // CHI SQUARE VALUE FOR FILTERING OUT
+    private static int maxChiVocabulary = 700;         // Amount of highest chi square words allowed
 
-    private static boolean debug = true;
+    private static boolean debug = false;
     private static boolean debugHard = false;
 
     private Tokenizer() {   }
 
     public static void setChiSquareValue(double newChiSquareValue) { chiSquareValue = newChiSquareValue; }
+    public static void setMaxChiVocabulary(int amount) { maxChiVocabulary = amount; }
 
     /**
      * Normalizes the given string and returns the separate normalized words in a string array.
@@ -119,9 +121,8 @@ public class Tokenizer {
             }
             int[][] table = createChiTable(frequencyTable);
             double chiSquareValue = calculateChiSquareValue(table);
-
-//            printTable(table);
-//            System.out.println("WORD: " + word + " CHI SQUARE VALUE: " + chiSquareValue);
+            frequencyTable.clear();
+            if (debugHard) {System.out.println("WORD: " + word + " CHI SQUARE VALUE: " + chiSquareValue); printTable(table); }
             if (chiSquareValue < Tokenizer.chiSquareValue) { infoGainLessWords.add(word); }
         }
         if (debug) System.out.println("A total of " + infoGainLessWords.size() + " words have a deficient information gain.");
@@ -131,7 +132,8 @@ public class Tokenizer {
     /**
      *  Returns the words with the highest ChiSquare values.
      */
-    public static HashSet<String> getHighestChiSquareWords(Collection<String> words) {
+    public static void removeLowestChiSquareWords(DataClass unfilteredDataClass) {
+        HashSet<String> words = DataClass.getTotalVocabulary();
         HashMap<Double, HashSet<String>> chiValues = new HashMap<>();
         HashMap<DataClass, Integer> frequencyTable = new HashMap<>();    // MAPS CLASS -> amount of docs word occurs in
 
@@ -149,12 +151,29 @@ public class Tokenizer {
             }
             int[][] table = createChiTable(frequencyTable);
             double chiSquareValue = calculateChiSquareValue(table);
+            frequencyTable.clear();
+            if (debugHard) printTable(table);
 
             if (!chiValues.containsKey(chiSquareValue)) { chiValues.put(chiSquareValue, new HashSet<>()); }
             chiValues.get(chiSquareValue).add(word);
         }
-        return getTopChiSquareWords(chiValues);
+        adjustVocabulary(unfilteredDataClass, chiValues);
     }
+
+    public static void adjustVocabulary(DataClass dataClass, HashMap<Double, HashSet<String>> chiValues) {
+        TreeMap<Double, HashSet<String>> sortedMap = new TreeMap<>(chiValues);
+
+
+        for (double chiValue : sortedMap.keySet()) {
+            for (String word : sortedMap.get(chiValue)) {
+                if (dataClass.getVocabulary().size() > maxChiVocabulary) {
+                    dataClass.getVocabulary().remove(word);
+                }
+            }
+        }
+    }
+
+
 
     /*
      * Calculates words with highest ChiSquare values.
@@ -164,21 +183,21 @@ public class Tokenizer {
         HashSet<String> lowestChiValues = new HashSet<>();
         TreeMap<Double, HashSet<String>> sortedMap = new TreeMap<>(Collections.reverseOrder());
         sortedMap.putAll(chiWords);
-        writeChiValues(sortedMap);
+//        writeChiValues(sortedMap);
 
-        int i = 0;
-        A: for (Double chiValue : sortedMap.keySet()) {
-            for (String word : sortedMap.get(chiValue)) {
-                if (chiValue > 0) {
-                    if (debugHard) System.out.printf("Word: %9s with ChiSquare Value: %.2f\n", word, chiValue);
-                    highestChiValues.add(word);
-                    i++;
-                } else {
-                    lowestChiValues.add(word);
-                }
-                if (i == MAX_CHI_WORDS) { break A; }
-            }
-        }
+//        int i = 0;
+//        for (Double chiValue : sortedMap.keySet()) {
+//            for (String word : sortedMap.get(chiValue)) {
+//                if (debugHard) { System.out.printf("Word: %9s with ChiSquare Value: %.2f\n", word, chiValue); }
+//                if (i < maxChiVocabulary) {
+//                    highestChiValues.add(word);
+//                    i++;
+//                } else {
+//                    lowestChiValues.add(word);
+//                }
+//            }
+//        }
+//        System.out.println("highest: " + highestChiValues.size() + " lowest: " + lowestChiValues.size()); // TODO REMOVE
         return lowestChiValues;
     }
 
@@ -211,8 +230,10 @@ public class Tokenizer {
             for (int j = 0; j < cols; j++) {
                 expectedValue = table[rows][j] * table[i][cols] / (double) table[rows][cols];
                 result += Math.pow((table[i][j] - expectedValue), 2) / expectedValue;
+
             }
         }
+        if (Double.isNaN(result)) { result = 0; }   //If word occurs in all docs of all classes, set Chi-Value to 0
         return result;
     }
 
@@ -225,25 +246,35 @@ public class Tokenizer {
             System.out.println(" ]");
         }
         System.out.print("\n");
+
+//        String printedTable = "";
+//        for (int x = 0; x < table.length; x++) {
+//            printedTable += "[";
+//            for (int y = 0; y < table[0].length; y++) {
+//                printedTable += String.format("%6d", table[x][y]);
+//            }
+//            printedTable += " ]\n";
+//        }
+//        printedTable += "\n";
+//        return printedTable;
     }
 
     public static void writeChiValues(TreeMap<Double, HashSet<String>> chiValues) {
         String filepath = "resources/textfiles/chiValues.txt";
-        String line = "";
 
+        String line = "";
         BufferedWriter writer = null;
         try {
             writer = new BufferedWriter(new FileWriter(filepath,true));
 
             for (Double chiValue : chiValues.keySet()) {
                 for (String word : chiValues.get(chiValue)) {
-                    line = String.format("%20s: %.2f\n", word, chiValue);
-                    System.out.print(line);
+                    line = String.format("%20s: %.2f", word, chiValue);
+                    System.out.println(line);
                     writer.write(line);
                     writer.newLine();
                 }
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -252,7 +283,6 @@ public class Tokenizer {
             } catch (Exception e) {
             }
         }
-
     }
 
 

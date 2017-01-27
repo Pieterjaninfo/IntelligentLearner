@@ -99,7 +99,7 @@ public class Utils {
         log += "\n";
         printStatistics(recall, precision, classnames);
         log += String.format("Accuracy: %.1f%% with (Train) Baseline: %.1f%% and (Test) Baseline: %.1f%%.\n", (accuracy * 100), (trainBaseline*100), (testBaseline*100));
-        log += "\n\n";
+        log += "\n";
 
     }
 

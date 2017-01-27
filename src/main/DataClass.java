@@ -12,7 +12,7 @@ public class DataClass {
     // =====================================================================================
 
     //MAP CLASSNAME -> CLASS
-    private static HashMap<String, DataClass> classes = new HashMap<>();    //MAPS Classname -> (WORD -> AMOUNT)
+    private static HashMap<String, DataClass> classes = new HashMap<>();
 
     /**
      * Returns the all classes contained in a HashMap.
@@ -22,11 +22,11 @@ public class DataClass {
     /**
      * Functionality to retrain the classes entirely using the current documents each DataClass holds
      */
-    public static void setupClasses() {
+    public static void setupClasses(boolean useChiValue) {
         for (DataClass dataClass : getClasses().values()) {
             dataClass.clearVocabulary();
             dataClass.extractVocabulary();
-            dataClass.filterWords();
+            dataClass.filterWords(useChiValue);
         }
     }
 
@@ -76,10 +76,10 @@ public class DataClass {
     /**
      * Prints the general info of all the classes.
      */
-    public static void printClassesInfo(boolean printwords) {
+    public static void printClassesInfo() {
         System.out.println("[DataClass.java] Info of all classes: ");
         for (String classname : classes.keySet()) {
-            classes.get(classname).printInfo(printwords);
+            classes.get(classname).printInfo();
         }
     }
 
@@ -149,39 +149,44 @@ public class DataClass {
      * @param words Map containing the words linked to the amount of the document
      */
     public void addDocument(String documentName, HashMap<String, Integer> words) {
-        if (!documents.containsKey(documentName)) {
-            documents.put(documentName, words);
-        } else {
-            System.err.println("[DataClass.java] Tried to add already existing document to the DataClass!");
+        String newDocumentName = documentName;
+        while (documents.containsKey(newDocumentName)) {
+//            System.out.println("[DataClass.java] Tried to add already existing document" + newDocumentName + " to the DataClass!");
+            newDocumentName += " ";
         }
+        documents.put(newDocumentName, words);
     }
 
     /**
      * Removes unreliable vocabulary
      */
-    public void filterWords() {
+    public void filterWords(boolean useChiValue) {
         Tokenizer.removeStopwords(vocabulary);
         Tokenizer.removeThresholdViolatingWords(vocabulary);
 
-        HashSet<String> uselessWords = Tokenizer.getViableChiSquareWords(DataClass.getTotalVocabulary());
-        vocabulary.keySet().removeAll(uselessWords);
+        if(useChiValue) {
+            HashSet<String> uselessWords = Tokenizer.getViableChiSquareWords(DataClass.getTotalVocabulary());
+            vocabulary.keySet().removeAll(uselessWords);
+        } else {
+            Tokenizer.removeLowestChiSquareWords(this);
+        }
+        printInfo();
+    }
+
+    public void removeDocuments() {
+        documents.clear();
+        clearVocabulary();
     }
 
     /**
      * Print the general information of this Class
      */
-    public void printInfo(boolean printwords) {
-        System.out.println("Class " + className + " contains " + vocabulary.size() + " vocabulary:");
+    public void printInfo() {
+        System.out.println("Class " + className + " vocabulary size: " + vocabulary.size() + " document size: " + documents.size() + ".");
 
-        if (vocabulary.isEmpty()) {
-            System.out.println("Class " + className + " is empty.");
-            return;
-        } else if (printwords) {
-            for (String word : vocabulary.keySet()) {
-                System.out.printf("%15s %d\n", word, vocabulary.get(word));
-            }
-        }
-        System.out.println("-----------------------------------------------------------------");
+//        for (String documentName : documents.keySet()) {
+//            System.out.println("Filename: " + documentName + ".");
+//        }
     }
 
 

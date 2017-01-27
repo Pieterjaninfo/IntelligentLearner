@@ -1,15 +1,13 @@
 package main;
 
-import java.util.*;
-
 /**
  * Created by Pieter Jan on 21-12-2016.
  */
 public class Main {
 
 
-    private static String trainpath = "resources/corpus/train/";
-    private static String testpath = "resources/corpus/test/";
+    private static String trainpath = "resources/corpus2/train/";
+    private static String testpath = "resources/corpus2/test/";
 
 
     public static void main(String[] args) {
@@ -24,7 +22,7 @@ public class Main {
         } catch (EmptyFolderException e) {
             e.printStackTrace();
         }
-        DataClass.setupClasses();
+        DataClass.setupClasses(false);
         System.out.println("Finished setting up all the classes.");
 
 
@@ -43,7 +41,7 @@ public class Main {
 
         //----------CHI WORDS.TXT------------------
 
-        Tokenizer.getHighestChiSquareWords(DataClass.getTotalVocabulary());
+//        Tokenizer.removeLowestChiSquareWords();
     }
 
 }

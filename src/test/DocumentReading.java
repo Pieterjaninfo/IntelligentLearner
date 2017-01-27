@@ -15,7 +15,7 @@ public class DocumentReading {
         //dc.scanDocumentsInDirectory(path);
         //dc.scanDocument("resources/corpus/train/M/M-test3.txt");
 
-        System.out.println("Scanning the file and updating wordcount took: " + (System.currentTimeMillis() - begin) + " milliseconds.");
+        System.out.println("Scanning the file and updating word count took: " + (System.currentTimeMillis() - begin) + " milliseconds.");
        // dc.displayWords();
     }
 }
