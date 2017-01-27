@@ -93,7 +93,7 @@ public class IntelligentLearnerGUI extends Component {
         kValueField.setModel(kModel);
 
         //Set chiValueField properties
-        SpinnerNumberModel intModel = new SpinnerNumberModel(100, 100, 10000, 50);
+        SpinnerNumberModel intModel = new SpinnerNumberModel(100, 100, null, 50);
         SpinnerNumberModel chiModel = new SpinnerNumberModel(0.0, 0.0, null, 0.1);
         chiValueField.setModel(chiModel);
 
