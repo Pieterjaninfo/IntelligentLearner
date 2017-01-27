@@ -122,7 +122,7 @@ public class Tokenizer {
 
 //            printTable(table);
 //            System.out.println("WORD: " + word + " CHI SQUARE VALUE: " + chiSquareValue);
-            if(chiSquareValue < Tokenizer.chiSquareValue) { infoGainLessWords.add(word); }
+            if (chiSquareValue < Tokenizer.chiSquareValue) { infoGainLessWords.add(word); }
         }
         if (debug) System.out.println("A total of " + infoGainLessWords.size() + " words have a deficient information gain.");
         return infoGainLessWords;
@@ -252,6 +252,7 @@ public class Tokenizer {
             } catch (Exception e) {
             }
         }
+
     }
 
 

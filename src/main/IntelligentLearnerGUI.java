@@ -223,7 +223,7 @@ public class IntelligentLearnerGUI extends Component {
         classifyButton.addActionListener((ActionEvent e) -> {
             HashMap<String, Integer> words = dc.scanDocument(fileFc.getSelectedFile().getAbsolutePath() + "\\");
             DataClass dataClass = cf.multinomialClassifier(words);
-            System.out.println("FILENAME: " + fileFc.getSelectedFile().getName());  //TODO REMOVE
+            if (debug) System.out.println("FILENAME: " + fileFc.getSelectedFile().getName());
             setSelectedClass(fileFc.getSelectedFile().getName(), dataClass.getClassName(), words);  //Sets the className and words for use in other scope
 
             classComboBox.removeAllItems();
@@ -248,7 +248,11 @@ public class IntelligentLearnerGUI extends Component {
                     dataClass.addDocument(selectedFileName, selectedWords);
 
                     //Re-train the specific classes
-                    DataClass.setupClasses();
+//                    DataClass.setupClasses();
+                    dataClass.clearVocabulary();
+                    dataClass.extractVocabulary();
+                    dataClass.filterWords();
+
                     System.out.printf("Updated class: %s with file %s.\n", dataClass.getClassName(), selectedFileName);
                 }
             } else if (incorrectButton.isSelected()){
@@ -258,7 +262,11 @@ public class IntelligentLearnerGUI extends Component {
                     dataClass.addDocument(selectedFileName, selectedWords);
 
                     //Re-train the specific classes
-                    DataClass.setupClasses();
+//                    DataClass.setupClasses();
+                    dataClass.clearVocabulary();
+                    dataClass.extractVocabulary();
+                    dataClass.filterWords();
+
                     System.out.printf("Updated class: %s with file %s.\n", dataClass.getClassName(), selectedFileName);
                 }
             } else {
@@ -273,7 +281,7 @@ public class IntelligentLearnerGUI extends Component {
         // Test button in Automatic testing tab
         testClassifierButton.addActionListener((ActionEvent e) -> {
             String testpath = testFc.getSelectedFile().getAbsolutePath() + "\\";
-            System.out.println("TESTPATH: " + testpath);
+            if (debug) System.out.println("TESTPATH: " + testpath);
 
             HashMap<String, HashMap<String, Integer>> stats = dc.scanTestDocuments(testpath);
 
