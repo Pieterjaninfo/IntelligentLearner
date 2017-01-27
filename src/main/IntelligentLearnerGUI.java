@@ -47,6 +47,7 @@ public class IntelligentLearnerGUI extends Component {
     private JButton testClassifierButton;
     private JPanel trainClfPanel;
     private JCheckBox updateClassifierCheckBox;
+    private JSpinner intSpinner;
     private JFileChooser trainFc;
 
     private String selectedFileName = "";
@@ -89,6 +90,10 @@ public class IntelligentLearnerGUI extends Component {
         //Set chiValueField properties
         SpinnerNumberModel chiModel = new SpinnerNumberModel(0.0, 0.0, null, 0.1);
         chiValueField.setModel(chiModel);
+
+        //
+        SpinnerNumberModel intModel = new SpinnerNumberModel(0, 0, null, 1);
+        intSpinner.setModel(intModel);
 
         //Create new file chooser for training directory
         trainFc = new JFileChooser();

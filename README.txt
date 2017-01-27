@@ -18,7 +18,7 @@ HOW TO INSTALL:
 4. Remember the location of the corpus files, you will need them for the program.
 
 HOW TO RUN:
-1. Open IntelligentLearner.bat
+1. Open "Intelligent Learner.jar"
 
 GUI INTERACTIONS:
 First tab (Initialise Classifier):
