@@ -173,6 +173,11 @@ public class DataClass {
         printInfo();
     }
 
+    public void removeDocuments() {
+        documents.clear();
+        clearVocabulary();
+    }
+
     /**
      * Print the general information of this Class
      */
