@@ -28,7 +28,7 @@ public class testMain {
         System.out.println("Finished setting up all the classes.");
 
 
-        HashMap<String, HashMap<String, Integer>> stats = dc.scanTestDocuments(testpath);
+        HashMap<String, HashMap<String, Integer>> stats = dc.scanTestDocuments(testpath, false, true);
         System.out.println("Finished reading test documents");
 
         //---------------------Create test results------------------------

@@ -76,10 +76,10 @@ public class DataClass {
     /**
      * Prints the general info of all the classes.
      */
-    public static void printClassesInfo(boolean printwords) {
+    public static void printClassesInfo() {
         System.out.println("[DataClass.java] Info of all classes: ");
         for (String classname : classes.keySet()) {
-            classes.get(classname).printInfo(printwords);
+            classes.get(classname).printInfo();
         }
     }
 
@@ -149,11 +149,12 @@ public class DataClass {
      * @param words Map containing the words linked to the amount of the document
      */
     public void addDocument(String documentName, HashMap<String, Integer> words) {
-        if (!documents.containsKey(documentName)) {
-            documents.put(documentName, words);
-        } else {
-            System.err.println("[DataClass.java] Tried to add already existing document to the DataClass!");
+        String newDocumentName = documentName;
+        while (documents.containsKey(newDocumentName)) {
+            System.out.println("[DataClass.java] Tried to add already existing document" + newDocumentName + " to the DataClass!");
+            newDocumentName += " ";
         }
+        documents.put(newDocumentName, words);
     }
 
     /**
@@ -175,18 +176,11 @@ public class DataClass {
     /**
      * Print the general information of this Class
      */
-    public void printInfo(boolean printwords) {
+    public void printInfo() {
         System.out.println("Class " + className + " contains " + vocabulary.size() + " vocabulary:");
-
-        if (vocabulary.isEmpty()) {
-            System.out.println("Class " + className + " is empty.");
-            return;
-        } else if (printwords) {
-            for (String word : vocabulary.keySet()) {
-                System.out.printf("%15s %d\n", word, vocabulary.get(word));
-            }
+        for (String documentName : documents.keySet()) {
+            System.out.println("Filename: " + documentName + ".");
         }
-        System.out.println("-----------------------------------------------------------------");
     }
 
 

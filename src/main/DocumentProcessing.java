@@ -71,7 +71,7 @@ public class DocumentProcessing {
         }
     }
 
-    public HashMap<String, HashMap<String, Integer>> scanTestDocuments(String testpath) {
+    public HashMap<String, HashMap<String, Integer>> scanTestDocuments(String testpath, boolean update, boolean useChiValue) {
         File folder = new File(testpath);
         File[] filesList = folder.listFiles();
 
@@ -94,6 +94,18 @@ public class DocumentProcessing {
                     HashMap<String, Integer> words = scanDocument(file2.getPath());
                     DataClass predictedClass = (new Classifier()).multinomialClassifier(words);
                     innerStats.put(predictedClass.getClassName(), innerStats.get(predictedClass.getClassName()) + 1);
+
+                    if (update) {
+                        DataClass realClass = DataClass.getClass(className);
+                        realClass.addDocument(file2.getName(), words);
+
+//                        System.out.println("Real class: " + className);
+
+
+                        realClass.clearVocabulary();
+                        realClass.extractVocabulary();
+                        realClass.filterWords(true);
+                    }
                 }
             }
         }

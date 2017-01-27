@@ -316,7 +316,7 @@
                         <constraints/>
                         <properties>
                           <columns value="80"/>
-                          <rows value="12"/>
+                          <rows value="14"/>
                         </properties>
                       </component>
                     </children>
