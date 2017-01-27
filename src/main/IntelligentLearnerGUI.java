@@ -149,6 +149,7 @@ public class IntelligentLearnerGUI extends Component {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
+                    trainButton.setEnabled(false);
                     ImageIcon loading = new ImageIcon("resources/images/ajax-loader.gif");
                     trainLabel.setIcon(loading);
                     trainLabel.setText("Please wait...");
@@ -177,6 +178,7 @@ public class IntelligentLearnerGUI extends Component {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
+                            trainButton.setEnabled(true);
                             tabbedPane1.setEnabledAt(1, true);
                             tabbedPane1.setEnabledAt(2, true);
                             trainLabel.setIcon(null);
@@ -285,6 +287,7 @@ public class IntelligentLearnerGUI extends Component {
                 @Override
                 public void run() {
                     ImageIcon loading = new ImageIcon("resources/images/ajax-loader.gif");
+                    testClassifierButton.setEnabled(false);
                     testClassifierButton.setIcon(loading);
                     testClassifierButton.setText("Please wait...");
                 }
@@ -318,6 +321,7 @@ public class IntelligentLearnerGUI extends Component {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
+                            testClassifierButton.setEnabled(true);
                             testClassifierButton.setIcon(null);
                             testClassifierButton.setText("Test Classifier");
                         }
