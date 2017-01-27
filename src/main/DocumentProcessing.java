@@ -60,13 +60,13 @@ public class DocumentProcessing {
      * Scan all the documents in the Train folder.
      */
     public void scanTrainDocuments(String trainpath) throws EmptyFolderException {
+        for (DataClass dataClass : DataClass.getClasses().values()) { dataClass.removeDocuments(); }
         File folder = new File(trainpath);
         File[] filesList = folder.listFiles();
 
         //List through all the class directories
         for (File file : filesList) {
             if (DataClass.getClass(file.getName()) == null) { new DataClass(file.getName()); }      //Create the class if it does not exist
-//            new DataClass(file.getName());                                                        //Create the class
             scanTrainDocumentsInDirectory(trainpath + file.getName());
         }
     }
@@ -104,7 +104,7 @@ public class DocumentProcessing {
 
                         realClass.clearVocabulary();
                         realClass.extractVocabulary();
-                        realClass.filterWords(true);
+                        realClass.filterWords(useChiValue);
                     }
                 }
             }

@@ -12,7 +12,7 @@ public class DataClass {
     // =====================================================================================
 
     //MAP CLASSNAME -> CLASS
-    private static HashMap<String, DataClass> classes = new HashMap<>();    //MAPS Classname -> (WORD -> AMOUNT)
+    private static HashMap<String, DataClass> classes = new HashMap<>();
 
     /**
      * Returns the all classes contained in a HashMap.
@@ -164,23 +164,29 @@ public class DataClass {
         Tokenizer.removeStopwords(vocabulary);
         Tokenizer.removeThresholdViolatingWords(vocabulary);
 
-        HashSet<String> uselessWords;
         if(useChiValue) {
-            uselessWords = Tokenizer.getViableChiSquareWords(DataClass.getTotalVocabulary());
+            HashSet<String> uselessWords = Tokenizer.getViableChiSquareWords(DataClass.getTotalVocabulary());
+            vocabulary.keySet().removeAll(uselessWords);
         } else {
-            uselessWords = Tokenizer.getHighestChiSquareWords(DataClass.getTotalVocabulary());
+            Tokenizer.removeLowestChiSquareWords(this);
         }
-        vocabulary.keySet().removeAll(uselessWords);
+        printInfo();
+    }
+
+    public void removeDocuments() {
+        documents.clear();
+        clearVocabulary();
     }
 
     /**
      * Print the general information of this Class
      */
     public void printInfo() {
-        System.out.println("Class " + className + " contains " + vocabulary.size() + " vocabulary:");
-        for (String documentName : documents.keySet()) {
-            System.out.println("Filename: " + documentName + ".");
-        }
+        System.out.println("Class " + className + " vocabulary size: " + vocabulary.size() + " document size: " + documents.size() + ".");
+
+//        for (String documentName : documents.keySet()) {
+//            System.out.println("Filename: " + documentName + ".");
+//        }
     }
 
 

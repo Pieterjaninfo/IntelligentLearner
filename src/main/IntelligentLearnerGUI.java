@@ -122,6 +122,8 @@ public class IntelligentLearnerGUI extends Component {
         DefaultCaret caret = (DefaultCaret) logTextArea.getCaret();
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
+        boolean useChiValue = false;
+
         //TODO: Fill with actual classes
 
         chiSquareBtn.addActionListener((ActionEvent e) -> {
@@ -195,7 +197,8 @@ public class IntelligentLearnerGUI extends Component {
                         e1.printStackTrace();
                         return;
                     }
-                    DataClass.setupClasses(true);
+                    DataClass.setupClasses(useChiValue);
+
                     // Activate relevant UI parts after classifier training is complete.
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
@@ -275,9 +278,9 @@ public class IntelligentLearnerGUI extends Component {
                     //Re-train the specific classes
                     dataClass.clearVocabulary();
                     dataClass.extractVocabulary();
-                    dataClass.filterWords(true);
+                    dataClass.filterWords(useChiValue);
 
-                    System.out.printf("Updated class: %s with file %s.\n", dataClass.getClassName(), selectedFileName);
+                    if (debug) System.out.printf("Updated class: %s with file %s.\n", dataClass.getClassName(), selectedFileName);
                 }
             } else if (incorrectButton.isSelected()){
                 //TODO: update classifier based on file.
@@ -288,9 +291,9 @@ public class IntelligentLearnerGUI extends Component {
                     //Re-train the specific classes
                     dataClass.clearVocabulary();
                     dataClass.extractVocabulary();
-                    dataClass.filterWords(true);
+                    dataClass.filterWords(useChiValue);
 
-                    System.out.printf("Updated class: %s with file %s.\n", dataClass.getClassName(), selectedFileName);
+                    if (debug) System.out.printf("Updated class: %s with file %s.\n", dataClass.getClassName(), selectedFileName);
                 }
             } else {
                 //TODO: add action when no radio button is selected.
@@ -320,7 +323,7 @@ public class IntelligentLearnerGUI extends Component {
                     String testpath = testFc.getSelectedFile().getAbsolutePath() + "\\";
                     if (debug) System.out.println("TESTPATH: " + testpath);
 
-                    HashMap<String, HashMap<String, Integer>> stats = dc.scanTestDocuments(testpath, updateClassifier, true);
+                    HashMap<String, HashMap<String, Integer>> stats = dc.scanTestDocuments(testpath, updateClassifier, useChiValue);
 
                     List<String> sortedClasses = new ArrayList(stats.keySet());
                     Collections.sort(sortedClasses);
