@@ -2,6 +2,7 @@ package main;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -113,6 +114,8 @@ public class IntelligentLearnerGUI extends Component {
         //Setup automatic classification area
         testClassifierButton.setEnabled(false);
         logTextArea.setEditable(false);
+        DefaultCaret caret = (DefaultCaret) logTextArea.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
         //TODO: Fill with actual classes
 
@@ -290,18 +293,15 @@ public class IntelligentLearnerGUI extends Component {
                     testClassifierButton.setText("Please wait...");
                 }
             });
-            //Start training the classifier on a new thread
+            //Start testing the classifier on a new thread
             Thread testThread = new Thread() {
                 public void run() {
-                    if (updateCheckBox.isSelected()) {
-                        //TODO: update with the test files.
-
-                    };
+                    boolean updateClassifier = updateClassifierCheckBox.isSelected();
 
                     String testpath = testFc.getSelectedFile().getAbsolutePath() + "\\";
                     if (debug) System.out.println("TESTPATH: " + testpath);
 
-                    HashMap<String, HashMap<String, Integer>> stats = dc.scanTestDocuments(testpath);
+                    HashMap<String, HashMap<String, Integer>> stats = dc.scanTestDocuments(testpath, updateClassifier, true);
 
                     List<String> sortedClasses = new ArrayList(stats.keySet());
                     Collections.sort(sortedClasses);
@@ -311,9 +311,12 @@ public class IntelligentLearnerGUI extends Component {
                     Utils.getStatistics(table, sortedClasses);
 
                     String log = Utils.getLog();
+                    logTextArea.append("\n");
                     logTextArea.append(getCurrentTime() + "\n");
                     logTextArea.append(log);
                     Utils.resetLog();
+
+//                    DataClass.printClassesInfo();
 
                     //Set button back to default text
                     SwingUtilities.invokeLater(new Runnable() {
