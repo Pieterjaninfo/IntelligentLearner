@@ -45,6 +45,7 @@ public class IntelligentLearnerGUI extends Component {
     private JTextArea logTextArea;
     private JButton testClassifierButton;
     private JPanel trainClfPanel;
+    private JCheckBox updateClassifierCheckBox;
     private JFileChooser trainFc;
 
     private String selectedFileName = "";
@@ -280,6 +281,11 @@ public class IntelligentLearnerGUI extends Component {
 
         // Test button in Automatic testing tab
         testClassifierButton.addActionListener((ActionEvent e) -> {
+            if (updateCheckBox.isSelected()) {
+                //TODO: update with the test files.
+
+            };
+
             String testpath = testFc.getSelectedFile().getAbsolutePath() + "\\";
             if (debug) System.out.println("TESTPATH: " + testpath);
 
