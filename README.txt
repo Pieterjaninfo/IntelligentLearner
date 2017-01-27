@@ -22,10 +22,11 @@ HOW TO RUN:
 
 GUI INTERACTIONS:
 First tab (Initialise Classifier):
-1. Enter natural values for the k-value and a real number for the Chi-value
+1. Enter natural values for the k-value and a real number for the Chi-value or natural for the max vocabulary size
+	a. The k-value determines the smoothing factor for multinomial classification.
 	b. A higher Chi value will make the classifier more accurate but limits its vocabulary.
 	   Only use this for large corpora.
-	c. The k-value determines ???
+	c. Max vocabulary size determines the maximum number of unique words for each class.
 2. Press Choose Training Directory... to select the %corpus%/train folder created in HOW TO INSTALL step 3.
 3. Press Train Classifier to start training the classifier based on the given corpus.
    (Depending on the size of the corpus this can take a few moments)	
