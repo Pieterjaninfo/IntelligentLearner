@@ -22,11 +22,11 @@ public class DataClass {
     /**
      * Functionality to retrain the classes entirely using the current documents each DataClass holds
      */
-    public static void setupClasses() {
+    public static void setupClasses(boolean useChiValue) {
         for (DataClass dataClass : getClasses().values()) {
             dataClass.clearVocabulary();
             dataClass.extractVocabulary();
-            dataClass.filterWords();
+            dataClass.filterWords(useChiValue);
         }
     }
 
@@ -159,11 +159,16 @@ public class DataClass {
     /**
      * Removes unreliable vocabulary
      */
-    public void filterWords() {
+    public void filterWords(boolean useChiValue) {
         Tokenizer.removeStopwords(vocabulary);
         Tokenizer.removeThresholdViolatingWords(vocabulary);
 
-        HashSet<String> uselessWords = Tokenizer.getViableChiSquareWords(DataClass.getTotalVocabulary());
+        HashSet<String> uselessWords;
+        if(useChiValue) {
+            uselessWords = Tokenizer.getViableChiSquareWords(DataClass.getTotalVocabulary());
+        } else {
+            uselessWords = Tokenizer.getHighestChiSquareWords(DataClass.getTotalVocabulary());
+        }
         vocabulary.keySet().removeAll(uselessWords);
     }
 

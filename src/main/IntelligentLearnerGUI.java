@@ -172,7 +172,7 @@ public class IntelligentLearnerGUI extends Component {
                         e1.printStackTrace();
                         return;
                     }
-                    DataClass.setupClasses();
+                    DataClass.setupClasses(true);
                     // Activate relevant UI parts after classifier training is complete.
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
@@ -249,10 +249,9 @@ public class IntelligentLearnerGUI extends Component {
                     dataClass.addDocument(selectedFileName, selectedWords);
 
                     //Re-train the specific classes
-//                    DataClass.setupClasses();
                     dataClass.clearVocabulary();
                     dataClass.extractVocabulary();
-                    dataClass.filterWords();
+                    dataClass.filterWords(true);
 
                     System.out.printf("Updated class: %s with file %s.\n", dataClass.getClassName(), selectedFileName);
                 }
@@ -263,10 +262,9 @@ public class IntelligentLearnerGUI extends Component {
                     dataClass.addDocument(selectedFileName, selectedWords);
 
                     //Re-train the specific classes
-//                    DataClass.setupClasses();
                     dataClass.clearVocabulary();
                     dataClass.extractVocabulary();
-                    dataClass.filterWords();
+                    dataClass.filterWords(true);
 
                     System.out.printf("Updated class: %s with file %s.\n", dataClass.getClassName(), selectedFileName);
                 }

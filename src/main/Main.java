@@ -8,8 +8,8 @@ import java.util.*;
 public class Main {
 
 
-    private static String trainpath = "resources/corpus/train/";
-    private static String testpath = "resources/corpus/test/";
+    private static String trainpath = "resources/corpus2/train/";
+    private static String testpath = "resources/corpus2/test/";
 
 
     public static void main(String[] args) {
@@ -24,7 +24,7 @@ public class Main {
         } catch (EmptyFolderException e) {
             e.printStackTrace();
         }
-        DataClass.setupClasses();
+        DataClass.setupClasses(false);
         System.out.println("Finished setting up all the classes.");
 
 

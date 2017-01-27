@@ -24,7 +24,7 @@ public class testMain {
         } catch (EmptyFolderException e) {
             e.printStackTrace();
         }
-        DataClass.setupClasses();
+        DataClass.setupClasses(false);
         System.out.println("Finished setting up all the classes.");
 
 
