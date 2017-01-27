@@ -56,6 +56,8 @@ public class IntelligentLearnerGUI extends Component {
     private String selectedFileName = "";
     private String selectedClassName = "";
     private HashMap<String, Integer> selectedWords;
+    boolean useChiValue = false;
+
 
     public static void main(String[] args) {
         //Let style automatically adapt to the operating system.
@@ -122,7 +124,6 @@ public class IntelligentLearnerGUI extends Component {
         DefaultCaret caret = (DefaultCaret) logTextArea.getCaret();
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
-        boolean useChiValue = false;
 
         //TODO: Fill with actual classes
 
@@ -186,8 +187,14 @@ public class IntelligentLearnerGUI extends Component {
                 public void run() {
                     String filepath = trainFc.getSelectedFile().getAbsolutePath() + "\\";
                     if (debug) System.out.println("path: " + filepath);
+                    if (chiSquareBtn.isSelected()) { useChiValue = true; }
                     cf.setSmoothingFactor((int) kValueField.getValue());
-                    Tokenizer.setChiSquareValue((double) chiValueField.getValue());
+
+                    if (useChiValue) {
+                        Tokenizer.setChiSquareValue((double) chiValueField.getValue());
+                    } else {
+                        Tokenizer.setMaxChiVocabulary((int) chiValueField.getValue());
+                    }
                     try {
                         dc.scanTrainDocuments(filepath);
                     } catch (EmptyFolderException e1) {
