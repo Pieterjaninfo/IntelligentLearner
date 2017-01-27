@@ -47,6 +47,10 @@ public class IntelligentLearnerGUI extends Component {
     private JButton testClassifierButton;
     private JPanel trainClfPanel;
     private JCheckBox updateClassifierCheckBox;
+    private JSpinner intSpinner;
+    private JRadioButton chiSquareBtn;
+    private JRadioButton maxVocabBtn;
+    private JLabel chiLabel;
     private JFileChooser trainFc;
 
     private String selectedFileName = "";
@@ -87,6 +91,7 @@ public class IntelligentLearnerGUI extends Component {
         kValueField.setModel(kModel);
 
         //Set chiValueField properties
+        SpinnerNumberModel intModel = new SpinnerNumberModel(100, 100, 10000, 50);
         SpinnerNumberModel chiModel = new SpinnerNumberModel(0.0, 0.0, null, 0.1);
         chiValueField.setModel(chiModel);
 
@@ -120,6 +125,20 @@ public class IntelligentLearnerGUI extends Component {
         boolean useChiValue = false;
 
         //TODO: Fill with actual classes
+
+        chiSquareBtn.addActionListener((ActionEvent e) -> {
+            chiSquareBtn.setSelected(true);
+            maxVocabBtn.setSelected(false);
+            chiValueField.setModel(chiModel);
+            chiLabel.setText("Chi Value (real >= 0.0)");
+        });
+
+        maxVocabBtn.addActionListener((ActionEvent e) -> {
+            maxVocabBtn.setSelected(true);
+            chiSquareBtn.setSelected(false);
+            chiValueField.setModel(intModel);
+            chiLabel.setText("Max vocabulary size (natural >= 100)");
+        });
 
         openTrainDirButton.addActionListener((ActionEvent e) -> {
             //Handle open button action.
@@ -334,6 +353,7 @@ public class IntelligentLearnerGUI extends Component {
             };
             testThread.start();
         });
+
     }
 
     // Returns the current date and time
