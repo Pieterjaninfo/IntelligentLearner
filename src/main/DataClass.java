@@ -151,7 +151,7 @@ public class DataClass {
     public void addDocument(String documentName, HashMap<String, Integer> words) {
         String newDocumentName = documentName;
         while (documents.containsKey(newDocumentName)) {
-            System.out.println("[DataClass.java] Tried to add already existing document" + newDocumentName + " to the DataClass!");
+//            System.out.println("[DataClass.java] Tried to add already existing document" + newDocumentName + " to the DataClass!");
             newDocumentName += " ";
         }
         documents.put(newDocumentName, words);
