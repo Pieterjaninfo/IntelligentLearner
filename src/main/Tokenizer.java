@@ -1,5 +1,6 @@
 package main;
 
+import javax.xml.crypto.Data;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -21,9 +22,9 @@ public class Tokenizer {
     private static int countMaxThreshold = 0;       // How many words above threshold were deleted
 
     private static double chiSquareValue = 0.0;       // CHI SQUARE VALUE FOR FILTERING OUT
-    private static int maxChiVocabulary = 300;         // Amount of highest chi square words allowed
+    private static int maxChiVocabulary = 500;         // Amount of highest chi square words allowed
 
-    private static boolean debug = true;
+    private static boolean debug = false;
     private static boolean debugHard = false;
 
     private Tokenizer() {   }
@@ -131,7 +132,8 @@ public class Tokenizer {
     /**
      *  Returns the words with the highest ChiSquare values.
      */
-    public static HashSet<String> getHighestChiSquareWords(Collection<String> words) {
+    public static void removeLowestChiSquareWords(DataClass unfilteredDataClass) {
+        HashSet<String> words = DataClass.getTotalVocabulary();
         HashMap<Double, HashSet<String>> chiValues = new HashMap<>();
         HashMap<DataClass, Integer> frequencyTable = new HashMap<>();    // MAPS CLASS -> amount of docs word occurs in
 
@@ -150,19 +152,28 @@ public class Tokenizer {
             int[][] table = createChiTable(frequencyTable);
             double chiSquareValue = calculateChiSquareValue(table);
             frequencyTable.clear();
-            printTable(table);
-
-//            if(word.equals("cute")) {
-//                System.out.println("Word: " + word + " chi-value: " + chiSquareValue + ".");
-//                printTable(table);
-//                System.exit(0);
-//            }
+            if (debugHard) printTable(table);
 
             if (!chiValues.containsKey(chiSquareValue)) { chiValues.put(chiSquareValue, new HashSet<>()); }
             chiValues.get(chiSquareValue).add(word);
         }
-        return getTopChiSquareWords(chiValues);
+        adjustVocabulary(unfilteredDataClass, chiValues);
     }
+
+    public static void adjustVocabulary(DataClass dataClass, HashMap<Double, HashSet<String>> chiValues) {
+        TreeMap<Double, HashSet<String>> sortedMap = new TreeMap<>(chiValues);
+
+
+        for (double chiValue : sortedMap.keySet()) {
+            for (String word : sortedMap.get(chiValue)) {
+                if (dataClass.getVocabulary().size() > maxChiVocabulary) {
+                    dataClass.getVocabulary().remove(word);
+                }
+            }
+        }
+    }
+
+
 
     /*
      * Calculates words with highest ChiSquare values.
@@ -174,18 +185,19 @@ public class Tokenizer {
         sortedMap.putAll(chiWords);
 //        writeChiValues(sortedMap);
 
-        int i = 0;
-        for (Double chiValue : sortedMap.keySet()) {
-            for (String word : sortedMap.get(chiValue)) {
-                if (debugHard) { System.out.printf("Word: %9s with ChiSquare Value: %.2f\n", word, chiValue); }
-                if (i < maxChiVocabulary) {
-                    highestChiValues.add(word);
-                    i++;
-                } else {
-                    lowestChiValues.add(word);
-                }
-            }
-        }
+//        int i = 0;
+//        for (Double chiValue : sortedMap.keySet()) {
+//            for (String word : sortedMap.get(chiValue)) {
+//                if (debugHard) { System.out.printf("Word: %9s with ChiSquare Value: %.2f\n", word, chiValue); }
+//                if (i < maxChiVocabulary) {
+//                    highestChiValues.add(word);
+//                    i++;
+//                } else {
+//                    lowestChiValues.add(word);
+//                }
+//            }
+//        }
+//        System.out.println("highest: " + highestChiValues.size() + " lowest: " + lowestChiValues.size()); // TODO REMOVE
         return lowestChiValues;
     }
 

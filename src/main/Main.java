@@ -1,7 +1,5 @@
 package main;
 
-import java.util.*;
-
 /**
  * Created by Pieter Jan on 21-12-2016.
  */
@@ -43,7 +41,7 @@ public class Main {
 
         //----------CHI WORDS.TXT------------------
 
-        Tokenizer.getHighestChiSquareWords(DataClass.getTotalVocabulary());
+//        Tokenizer.removeLowestChiSquareWords();
     }
 
 }

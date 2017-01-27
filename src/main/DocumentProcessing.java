@@ -104,7 +104,7 @@ public class DocumentProcessing {
 
                         realClass.clearVocabulary();
                         realClass.extractVocabulary();
-                        realClass.filterWords(true);
+                        realClass.filterWords(useChiValue);
                     }
                 }
             }
